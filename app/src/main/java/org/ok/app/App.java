@@ -4,6 +4,7 @@
 package org.ok.app;
 
 import org.ok.protocols.CaesarCipher;
+import main.java.org.ok.protocols.HMAC256;
 
 public class App {
     public static void main(String[] args) {
@@ -14,5 +15,8 @@ public class App {
         System.out.println("Original: " + message);
         System.out.println("Encrypted: " + cipher.encrypt(message));
         System.out.println("Decrypted: " + cipher.decrypt(cipher.encrypt(message)));
+
+        HMAC256 hmac = new HMAC256();
+        hmac.testPrint();
     }
 }

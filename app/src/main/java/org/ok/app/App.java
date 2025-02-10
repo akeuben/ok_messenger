@@ -4,7 +4,7 @@
 package org.ok.app;
 
 import org.ok.protocols.CaesarCipher;
-import main.java.org.ok.protocols.HMAC256;
+import org.ok.protocols.HMAC256;
 
 public class App {
     public static void main(String[] args) {

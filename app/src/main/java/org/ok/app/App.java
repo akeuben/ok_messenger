@@ -3,7 +3,7 @@
  */
 package org.ok.app;
 
-import org.ok.protocols.CaesarCipher;
+import org.ok.protocols.caesar.CaesarCipher;
 
 public class App {
     public static void main(String[] args) {

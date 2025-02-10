@@ -3,20 +3,20 @@ package org.ok.protocols;
 class SHA256 {
     /*
      * // Various logical functions
-#define Ch(x, y, z) (z ^ (x & (y ^ z)))
-#define Maj(x, y, z) (((x | y) & z) | (x & y))
-#define S(x, n) ror((x), (n))
-#define R(x, n) (((x)&0xFFFFFFFFUL) >> (n))
-#define Sigma0(x) (S(x, 2) ^ S(x, 13) ^ S(x, 22))
-#define Sigma1(x) (S(x, 6) ^ S(x, 11) ^ S(x, 25))
-#define Gamma0(x) (S(x, 7) ^ S(x, 18) ^ R(x, 3))
-#define Gamma1(x) (S(x, 17) ^ S(x, 19) ^ R(x, 10))
-
-#define Sha256Round(a, b, c, d, e, f, g, h, i)    \
-  t0 = h + Sigma1(e) + Ch(e, f, g) + K[i] + W[i]; \
-  t1 = Sigma0(a) + Maj(a, b, c);                  \
-  d += t0;                                        \
-  h = t0 + t1;
+     * #define Ch(x, y, z) (z ^ (x & (y ^ z)))
+     * #define Maj(x, y, z) (((x | y) & z) | (x & y))
+     * #define S(x, n) ror((x), (n))
+     * #define R(x, n) (((x)&0xFFFFFFFFUL) >> (n))
+     * #define Sigma0(x) (S(x, 2) ^ S(x, 13) ^ S(x, 22))
+     * #define Sigma1(x) (S(x, 6) ^ S(x, 11) ^ S(x, 25))
+     * #define Gamma0(x) (S(x, 7) ^ S(x, 18) ^ R(x, 3))
+     * #define Gamma1(x) (S(x, 17) ^ S(x, 19) ^ R(x, 10))
+     * 
+     * #define Sha256Round(a, b, c, d, e, f, g, h, i) \
+     * t0 = h + Sigma1(e) + Ch(e, f, g) + K[i] + W[i]; \
+     * t1 = Sigma0(a) + Maj(a, b, c); \
+     * d += t0; \
+     * h = t0 + t1;
      */
     private final int h0 = 0x6a09e667;
     private final int h1 = 0xbb67ae85;
@@ -35,6 +35,10 @@ class SHA256 {
             0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
             0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa,
             0xa4506ceb, 0xbef9a3f7, 0xc67178f2 };
+
+    private int ch(int x, int y, int z) {
+        return (z ^ (x & (y ^ z)));
+    }
 }
 
 public class HMAC256 {

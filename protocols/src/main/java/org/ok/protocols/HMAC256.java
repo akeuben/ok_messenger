@@ -1,13 +1,22 @@
 package org.ok.protocols;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 class Sha256Context {
     protected Long length;
     protected int[] state = new int[8];
     protected int curlen;
-    protected byte[] buf = new byte[64];
-};
+    protected int[] buf = new int[64];
+}
+
+class SHA256_HASH {
+    int[] bytes = new int[64];
+}
 
 class SHA256 {
+    private final int BLOCK_SIZE = 64;
     private final int h0 = 0x6a09e667;
     private final int h1 = 0xbb67ae85;
     private final int h2 = 0x3c6ef372;
@@ -28,18 +37,22 @@ class SHA256 {
 
     private int[] W = new int[64];
 
+    public SHA256() {
+
+    }
+
     private int ror(int value, int bits) {
         return (((value) >> (bits)) | ((value) << (32 - (bits))));
     }
 
-    private void store32H(int x, byte[] y) {
+    private void store32H(int x, int[] y) {
         y[0] = (byte) ((x >> 24) & 255);
         y[1] = (byte) ((x >> 16) & 255);
         y[2] = (byte) ((x >> 8) & 255);
         y[3] = (byte) (x & 255);
     }
 
-    private int load32H(byte[] y) {
+    private int load32H(int[] y) {
         return ((y[0] & 0xFF) << 24) | ((y[1] & 0xFF) << 16) | ((y[2] & 0xFF) << 8) | (y[3] & 0xFF);
     }
 
@@ -93,7 +106,7 @@ class SHA256 {
         sArray[7] = t0 + t1;
     }
 
-    void TransformFunction(Sha256Context Context, byte[][] Buffer) {
+    void TransformFunction(Sha256Context Context, int[] Buffer) {
         int[] s = new int[8];
         int t0;
         int t1;
@@ -107,7 +120,7 @@ class SHA256 {
 
         // Copy the state into 512-bits into W[0..15]
         for (i = 0; i < 16; i++) {
-            W[i] = load32H(Buffer[i]);
+            W[i] = load32H(Buffer);
         }
 
         // Fill W[16..63]
@@ -147,6 +160,78 @@ class SHA256 {
         Context.state[6] = 0x1F83D9AB;
         Context.state[7] = 0x5BE0CD19;
     }
+
+    public void Sha256Update(Sha256Context context,
+            int[] buffer,
+            int bufferSize) {
+        int n;
+
+        if (context.curlen > context.buf.length) {
+            return;
+        }
+
+        int offset = 0;
+        while (bufferSize > 0) {
+            if (context.curlen == 0 && bufferSize >= BLOCK_SIZE) {
+                TransformFunction(context, buffer);
+                context.length += BLOCK_SIZE * 8;
+                offset += BLOCK_SIZE;
+                bufferSize -= BLOCK_SIZE;
+            } else {
+                n = Math.min(bufferSize, (BLOCK_SIZE - context.curlen));
+                System.arraycopy(buffer, offset, context.buf, context.curlen, n);
+                context.curlen += n;
+                offset += n;
+                bufferSize -= n;
+                if (context.curlen == BLOCK_SIZE) {
+                    TransformFunction(context, context.buf);
+                    context.length += 8 * BLOCK_SIZE;
+                    context.curlen = 0;
+                }
+            }
+        }
+    }
+
+    void Sha256Finalise(Sha256Context Context, // [in out]
+            SHA256_HASH Digest // [out]
+    ) {
+        int i;
+
+        if (Context.curlen >= Context.buf.length) {
+            return;
+        }
+
+        // Increase the length of the message
+        Context.length += Context.curlen * 8;
+
+        // Append the '1' bit
+        Context.buf[Context.curlen++] = (byte) 0x80;
+
+        // if the length is currently above 56 bytes we append zeros
+        // then compress. Then we can fall back to padding zeros and length
+        // encoding like normal.
+        if (Context.curlen > 56) {
+            while (Context.curlen < 64) {
+                Context.buf[Context.curlen++] = 0;
+            }
+            TransformFunction(Context, Context.buf);
+            Context.curlen = 0;
+        }
+
+        // Pad up to 56 bytes of zeroes
+        while (Context.curlen < 56) {
+            Context.buf[Context.curlen++] = 0;
+        }
+
+        // Store length
+        store64H(Context.length, Context.buf);
+        TransformFunction(Context, Context.buf);
+
+        // Copy output
+        for (i = 0; i < 8; i++) {
+            store32H(Context.state[i], Digest.bytes);
+        }
+    }
 }
 
 public class HMAC256 {
@@ -155,6 +240,82 @@ public class HMAC256 {
     }
 
     public void testPrint() {
-        System.out.println("HMAC printing");
+        String str_data = "Hello World!";
+        String str_key = "super-secret-key";
+        int[] out = new int[64];
+        char[] out_str = new char[64 * 2 + 1];
+        int i;
+
+        // Call hmac-sha256 function
+        int[] tempKey = new int[str_key.getBytes().length];
+        for (int ii = 0; ii < str_key.getBytes().length; ii++) {
+            tempKey[ii] = str_key.getBytes()[ii];
+        }
+        int[] tempData = new int[str_data.getBytes().length];
+        for (int ii = 0; ii < str_data.getBytes().length; ii++) {
+            tempData[ii] = str_data.getBytes()[ii];
+        }
+        hmacSha256(tempKey, str_key.getBytes().length, tempData, str_data.getBytes().length, out,
+                out.length);
+        for (int b : out) {
+            System.out.println(b);
+        }
     }
+
+    private static final int SHA256_BLOCK_SIZE = 64;
+    private static final int SHA256_HASH_SIZE = 32;
+
+    public static int hmacSha256(int[] key, int keylen, int[] data, int datalen, int[] out, int outlen) {
+        int[] k = new int[SHA256_BLOCK_SIZE];
+        int[] k_ipad = new int[SHA256_BLOCK_SIZE];
+        int[] k_opad = new int[SHA256_BLOCK_SIZE];
+        int[] ihash = new int[SHA256_HASH_SIZE];
+        int[] ohash = new int[SHA256_HASH_SIZE];
+
+        Arrays.fill(k_ipad, (byte) 0x36);
+        Arrays.fill(k_opad, (byte) 0x5c);
+
+        if (keylen > SHA256_BLOCK_SIZE) {
+            // If the key is larger than the hash algorithm's block size, we must digest it
+            // first.
+            sha256(key, keylen, k, k.length);
+        } else {
+            System.arraycopy(key, 0, k, 0, keylen);
+        }
+
+        for (int i = 0; i < SHA256_BLOCK_SIZE; i++) {
+            k_ipad[i] ^= k[i];
+            k_opad[i] ^= k[i];
+        }
+
+        // Perform HMAC algorithm: H(K XOR opad, H(K XOR ipad, data))
+        H(k_ipad, k_ipad.length, data, datalen, ihash, ihash.length);
+        H(k_opad, k_opad.length, ihash, ihash.length, ohash, ohash.length);
+
+        int sz = Math.min(outlen, SHA256_HASH_SIZE);
+        System.arraycopy(ohash, 0, out, 0, sz);
+        return sz;
+    }
+
+    private static int[] H(int[] x, int xlen, int[] y, int ylen, int[] out, int outlen) {
+        int[] buf = new int[xlen + ylen];
+        System.arraycopy(x, 0, buf, 0, xlen);
+        System.arraycopy(y, 0, buf, xlen, ylen);
+        return sha256(buf, buf.length, out, outlen);
+    }
+
+    private static int[] sha256(int[] data, int datalen, int[] out, int outlen) {
+        // Assuming Sha256Context and SHA256_HASH are defined elsewhere
+        Sha256Context ctx = new Sha256Context();
+        SHA256_HASH hash = new SHA256_HASH();
+        SHA256 sha256 = new SHA256();
+        sha256.Sha256Initialise(ctx);
+        sha256.Sha256Update(ctx, data, datalen);
+        sha256.Sha256Finalise(ctx, hash);
+
+        int sz = Math.min(outlen, SHA256_HASH_SIZE);
+        System.arraycopy(hash.bytes, 0, out, 0, sz);
+        return out;
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.ok.protocols;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -8,11 +9,11 @@ class Sha256Context {
     protected Long length;
     protected int[] state = new int[8];
     protected int curlen;
-    protected int[] buf = new int[64];
+    protected byte[] buf = new byte[64]; // Original uint8
 }
 
 class SHA256_HASH {
-    int[] bytes = new int[64];
+    byte[] bytes = new byte[256 / 8]; // Original uint8
 }
 
 class SHA256 {
@@ -45,18 +46,18 @@ class SHA256 {
         return (((value) >> (bits)) | ((value) << (32 - (bits))));
     }
 
-    private void store32H(int x, int[] y) {
+    private void store32H(int x, byte[] y) {
         y[0] = (byte) ((x >> 24) & 255);
         y[1] = (byte) ((x >> 16) & 255);
         y[2] = (byte) ((x >> 8) & 255);
         y[3] = (byte) (x & 255);
     }
 
-    private int load32H(int[] y) {
+    private int load32H(byte[] y) {
         return ((y[0] & 0xFF) << 24) | ((y[1] & 0xFF) << 16) | ((y[2] & 0xFF) << 8) | (y[3] & 0xFF);
     }
 
-    private void store64H(long x, int[] y) {
+    private void store64H(long x, byte[] y) {
         y[0] = (byte) ((x >> 56) & 0xFF);
         y[1] = (byte) ((x >> 48) & 0xFF);
         y[2] = (byte) ((x >> 40) & 0xFF);
@@ -106,10 +107,8 @@ class SHA256 {
         sArray[7] = t0 + t1;
     }
 
-    void TransformFunction(Sha256Context Context, int[] Buffer) {
+    void TransformFunction(Sha256Context Context, byte[] Buffer) {
         int[] s = new int[8];
-        int t0;
-        int t1;
         int t;
         int i;
 
@@ -120,7 +119,8 @@ class SHA256 {
 
         // Copy the state into 512-bits into W[0..15]
         for (i = 0; i < 16; i++) {
-            W[i] = load32H(Buffer);
+            // W[i] = load32H(Buffer);
+            W[i] = ByteBuffer.wrap(Buffer, 4 * i, 4).order(ByteOrder.BIG_ENDIAN).getInt();
         }
 
         // Fill W[16..63]
@@ -162,7 +162,7 @@ class SHA256 {
     }
 
     public void Sha256Update(Sha256Context context,
-            int[] buffer,
+            byte[] buffer,
             int bufferSize) {
         int n;
 
@@ -242,35 +242,36 @@ public class HMAC256 {
     public void testPrint() {
         String str_data = "Hello World!";
         String str_key = "super-secret-key";
-        int[] out = new int[64];
+        byte[] out = new byte[64];
         char[] out_str = new char[64 * 2 + 1];
         int i;
 
         // Call hmac-sha256 function
-        int[] tempKey = new int[str_key.getBytes().length];
+        byte[] tempKey = new byte[str_key.getBytes().length];
         for (int ii = 0; ii < str_key.getBytes().length; ii++) {
             tempKey[ii] = str_key.getBytes()[ii];
         }
-        int[] tempData = new int[str_data.getBytes().length];
+        byte[] tempData = new byte[str_data.getBytes().length];
         for (int ii = 0; ii < str_data.getBytes().length; ii++) {
             tempData[ii] = str_data.getBytes()[ii];
         }
         hmacSha256(tempKey, str_key.getBytes().length, tempData, str_data.getBytes().length, out,
                 out.length);
-        for (int b : out) {
-            System.out.println(b);
+        for (byte b : out) {
+            System.out.println(new String(new byte[] { (byte) b },
+                    StandardCharsets.US_ASCII));
         }
     }
 
     private static final int SHA256_BLOCK_SIZE = 64;
     private static final int SHA256_HASH_SIZE = 32;
 
-    public static int hmacSha256(int[] key, int keylen, int[] data, int datalen, int[] out, int outlen) {
-        int[] k = new int[SHA256_BLOCK_SIZE];
-        int[] k_ipad = new int[SHA256_BLOCK_SIZE];
-        int[] k_opad = new int[SHA256_BLOCK_SIZE];
-        int[] ihash = new int[SHA256_HASH_SIZE];
-        int[] ohash = new int[SHA256_HASH_SIZE];
+    public static int hmacSha256(byte[] key, int keylen, byte[] data, int datalen, byte[] out, int outlen) {
+        byte[] k = new byte[SHA256_BLOCK_SIZE];
+        byte[] k_ipad = new byte[SHA256_BLOCK_SIZE];
+        byte[] k_opad = new byte[SHA256_BLOCK_SIZE];
+        byte[] ihash = new byte[SHA256_HASH_SIZE];
+        byte[] ohash = new byte[SHA256_HASH_SIZE];
 
         Arrays.fill(k_ipad, (byte) 0x36);
         Arrays.fill(k_opad, (byte) 0x5c);
@@ -280,7 +281,9 @@ public class HMAC256 {
             // first.
             sha256(key, keylen, k, k.length);
         } else {
-            System.arraycopy(key, 0, k, 0, keylen);
+            for (int ik = 0; ik < keylen; ik++) {
+                key[ik] = (byte) k[ik];
+            }
         }
 
         for (int i = 0; i < SHA256_BLOCK_SIZE; i++) {
@@ -297,14 +300,20 @@ public class HMAC256 {
         return sz;
     }
 
-    private static int[] H(int[] x, int xlen, int[] y, int ylen, int[] out, int outlen) {
-        int[] buf = new int[xlen + ylen];
+    private static byte[] H(byte[] x, int xlen, byte[] y, int ylen, byte[] out, int outlen) {
+        byte[] buf = new byte[xlen + ylen];
+        // for (int i = 0; i < xlen; i++) {
+        // x[i] = buf[i];
+        // }
+        // for (int i = xlen; i < ylen; i++) {
+        // y[i] = buf[i];
+        // }
         System.arraycopy(x, 0, buf, 0, xlen);
         System.arraycopy(y, 0, buf, xlen, ylen);
         return sha256(buf, buf.length, out, outlen);
     }
 
-    private static int[] sha256(int[] data, int datalen, int[] out, int outlen) {
+    private static byte[] sha256(byte[] data, int datalen, byte[] out, int outlen) {
         // Assuming Sha256Context and SHA256_HASH are defined elsewhere
         Sha256Context ctx = new Sha256Context();
         SHA256_HASH hash = new SHA256_HASH();
@@ -314,6 +323,9 @@ public class HMAC256 {
         sha256.Sha256Finalise(ctx, hash);
 
         int sz = Math.min(outlen, SHA256_HASH_SIZE);
+        // for(int i = 0; i < sz;i++){
+        // hash.bytes[i] = (byte)out[i];
+        // }
         System.arraycopy(hash.bytes, 0, out, 0, sz);
         return out;
     }

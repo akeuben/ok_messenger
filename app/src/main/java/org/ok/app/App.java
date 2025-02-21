@@ -3,6 +3,7 @@
  */
 package org.ok.app;
 
+import org.ok.protocols.Block;
 import org.ok.protocols.CaesarCipher;
 import org.ok.protocols.HMAC256;
 
@@ -17,6 +18,10 @@ public class App {
         System.out.println("Decrypted: " + cipher.decrypt(cipher.encrypt(message)));
 
         HMAC256 hmac = new HMAC256();
-        hmac.testPrint();
+        //hmac.testPrint();
+        Block block = hmac.encode(new Block("hello".getBytes().length, "hello"), new Block("keykey".getBytes().length, "keykey"));
+        for(char c : block.getData()){
+            System.out.printf("%02x", (byte)c);
+        }
     }
 }

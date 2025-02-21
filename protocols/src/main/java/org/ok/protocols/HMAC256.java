@@ -1,7 +1,5 @@
 package org.ok.protocols;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -41,34 +39,36 @@ class HmacSha256 {
             0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2 };
 
     // public static void main(String args[]) {
-    //     String str_data = "hello";
-    //     String str_key = "keykey";
-    //     byte[] out = new byte[(int) SHA256_HASH_SIZE];
-    //     // char out_str[SHA256_HASH_SIZE * 2 + 1];
-    //     int i;
+    // String str_data = "hello";
+    // String str_key = "keykey";
+    // byte[] out = new byte[(int) SHA256_HASH_SIZE];
+    // // char out_str[SHA256_HASH_SIZE * 2 + 1];
+    // int i;
 
-    //     // Call hmac-sha256 function
-    //     try {
-    //         for (byte b : str_data.getBytes("US-ASCII")) {
-    //             System.out.printf("%02x\n", b & 0xff);
-    //         }
-    //     } catch (UnsupportedEncodingException e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
-    //     try {
-    //         out = hmac_sha256(str_key.getBytes("US-ASCII"), str_key.length(), str_data.getBytes("US-ASCII"),
-    //                 str_data.length(), out,
-    //                 out.length);
-    //     } catch (UnsupportedEncodingException e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
+    // // Call hmac-sha256 function
+    // try {
+    // for (byte b : str_data.getBytes("US-ASCII")) {
+    // System.out.printf("%02x\n", b & 0xff);
+    // }
+    // } catch (UnsupportedEncodingException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // try {
+    // out = hmac_sha256(str_key.getBytes("US-ASCII"), str_key.length(),
+    // str_data.getBytes("US-ASCII"),
+    // str_data.length(), out,
+    // out.length);
+    // } catch (UnsupportedEncodingException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
 
-    //     for (byte b : out) {
-    //         System.out.printf("%02x", b);
-    //     }
-    //    System.out.println("\n209800404ad6227356941d9b1fd44a610d178902db5e9ca2a25d8cf1f8ecaf12 ---");
+    // for (byte b : out) {
+    // System.out.printf("%02x", b);
+    // }
+    // System.out.println("\n209800404ad6227356941d9b1fd44a610d178902db5e9ca2a25d8cf1f8ecaf12
+    // ---");
     // }
 
     static int ror(int value, int bits) {
@@ -395,6 +395,31 @@ class HmacSha256 {
 public class HMAC256 {
     public HMAC256() {
 
+    }
+
+    public Block encode(Block value, Block key) {
+        System.out.println();
+        System.out.println();
+        byte[] out = new byte[32];
+        byte[] tempKey = new byte[key.getSizeBytes()];
+        for (int i = 0; i < key.getSizeBytes(); i++) {
+            tempKey[i] = (byte) key.getData()[i];
+        }
+        byte[] tempData = new byte[value.getSizeBytes()];
+        for (int i = 0; i < value.getSizeBytes(); i++) {
+            tempData[i] = (byte) value.getData()[i];
+        }
+        HmacSha256.hmac_sha256(tempKey, key.getSizeBytes(), tempData, value.getSizeBytes(), out,
+                out.length);
+        char[] charOut = new char[32];
+        for (int i = 0; i < out.length; i++) {
+            charOut[i] = (char) out[i];
+        }
+        return new Block(32, charOut);
+    }
+
+    public boolean verify(Block hmac, Block key) {//Probably not ready yet
+        return Arrays.equals(hmac.getData(), key.getData());
     }
 
     public void testPrint() {

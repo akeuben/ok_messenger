@@ -5,7 +5,7 @@ public abstract class Key extends Block {
         super(size);
     }
 
-    public Key(int size, char[] key) {
+    public Key(int size, byte[] key) {
         super(size, key);
     }
 

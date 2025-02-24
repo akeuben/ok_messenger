@@ -25,8 +25,8 @@ public class GF256 {
     }
 
     public static void main(String[] args) {
-        int a = 0x57; // Example value (87 in decimal)
-        int b = 0x83; // Example value (131 in decimal)
+        int a = 0xec; // Example value (87 in decimal)
+        int b = 0x3b; // Example value (131 in decimal)
 
         int product = multiply(a, b);
         System.out.printf("Multiplication in GF(2^8): 0x%02X\n", product); // Expected: 0xC1

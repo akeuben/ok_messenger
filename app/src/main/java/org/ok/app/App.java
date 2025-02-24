@@ -5,7 +5,7 @@ package org.ok.app;
 
 import org.ok.protocols.Block;
 import org.ok.protocols.CaesarCipher;
-import org.ok.protocols.HMAC256;
+import org.ok.protocols.HMAC;
 
 public class App {
     public static void main(String[] args) {
@@ -17,7 +17,7 @@ public class App {
         System.out.println("Encrypted: " + cipher.encrypt(message));
         System.out.println("Decrypted: " + cipher.decrypt(cipher.encrypt(message)));
 
-        HMAC256 hmac = new HMAC256();
+        HMAC hmac = new HMAC();
         //hmac.testPrint();
         Block block = hmac.encode(new Block("hello".getBytes().length, "hello"), new Block("keykey".getBytes().length, "keykey"));
         for(char c : block.getData()){

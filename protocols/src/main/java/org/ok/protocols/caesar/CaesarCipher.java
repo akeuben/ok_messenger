@@ -1,4 +1,4 @@
-package org.ok.protocols;
+package org.ok.protocols.caesar;
 
 public class CaesarCipher {
 

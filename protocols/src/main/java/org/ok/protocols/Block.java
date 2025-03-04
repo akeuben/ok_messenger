@@ -3,6 +3,7 @@ package org.ok.protocols;
 import org.ok.protocols.aes.AESKey;
 
 import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
 import java.util.HexFormat;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -20,6 +21,10 @@ public class Block {
         }
     }
 
+    public Block(java.security.Key key) {
+        this(key.getEncoded().length, key.getEncoded());
+    }
+
     public Block(int sizeBytes, byte[] data) {
         this(sizeBytes);
         setData(data);
@@ -30,10 +35,24 @@ public class Block {
         setData(data);
     }
 
+    public Block(byte[] data) {
+        this(data.length, data);
+    }
+
+    public Block(String data) {
+        this(data.length(), data);
+    }
+
     public static Block fromHexString(String hexEncodedBlock) {
         byte[] bytes = HexFormat.of().parseHex(hexEncodedBlock);
 
         return new Block(bytes.length, bytes);
+    }
+
+    public Block subData(int start, int end) {
+        byte[] data = new byte[end-start];
+        System.arraycopy(this.data, start, data, 0, end-start);
+        return new Block(data.length, data);
     }
 
     private void setData(String data) {
@@ -152,5 +171,21 @@ public class Block {
         }
 
         return hex.toString();
+    }
+
+    public static Block concat(Block ...blocks) {
+        int size = 0;
+        for(int i = 0; i < blocks.length; i++) {
+            size += blocks[i].size;
+        }
+
+        byte[] resultData = new byte[size];
+
+        int start = 0;
+        for(int i = 0; i < blocks.length; i++) {
+            System.arraycopy(blocks[i].data, 0, resultData, start, blocks[i].getSizeBytes());
+            start += blocks[i].getSizeBytes();
+        }
+        return new Block(resultData.length, resultData);
     }
 }

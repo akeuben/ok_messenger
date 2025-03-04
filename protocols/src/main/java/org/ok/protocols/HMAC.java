@@ -11,12 +11,12 @@ public class HMAC {
         sha = new SHA256();
     }
 
-    protected byte[] hmac_sha256(byte[] key, long keylen, byte[] data, long datalen, byte[] out, long outlen) {
-        byte[] k = new byte[(int) BLOCK_SIZE];
-        byte[] k_ipad = new byte[(int) BLOCK_SIZE];
-        byte[] k_opad = new byte[(int) BLOCK_SIZE];
-        byte[] ihash = new byte[(int) SHA256_HASH_SIZE];
-        byte[] ohash = new byte[(int) SHA256_HASH_SIZE];
+    protected int[] hmac_sha256(int[] key, long keylen, int[] data, long datalen, int[] out, long outlen) {
+        int[] k = new int[(int) BLOCK_SIZE];
+        int[] k_ipad = new int[(int) BLOCK_SIZE];
+        int[] k_opad = new int[(int) BLOCK_SIZE];
+        int[] ihash = new int[(int) SHA256_HASH_SIZE];
+        int[] ohash = new int[(int) SHA256_HASH_SIZE];
         long sz;
         int i;
         for (i = 0; i < k.length; i++) {
@@ -32,7 +32,7 @@ public class HMAC {
         if (keylen > BLOCK_SIZE) {
             // If the key is larger than the hash algorithm's
             // block size, we must digest it first.
-            sha.sha256(key, k.length);
+            sha.sha256(key, k.length, out, outlen);
         } else {
             for (i = 0; i < keylen; i++) {
                 k[i] = (byte) key[i];
@@ -57,10 +57,10 @@ public class HMAC {
         return out;
     }
 
-    protected byte[] H(byte[] x, long xlen, byte[] y, long ylen, byte[] out, long outlen) {
-        byte[] result;
+    protected int[] H(int[] x, long xlen, int[] y, long ylen, int[] out, long outlen) {
+        int[] result;
         long buflen = (xlen + ylen);
-        byte[] buf = new byte[(int) buflen];
+        int[] buf = new int[(int) buflen];
 
         for (int i = 0; i < xlen; i++) {
             buf[i] = x[i];
@@ -68,21 +68,21 @@ public class HMAC {
         for (int i = 0; i < ylen; i++) {
             buf[i + (int) xlen] = y[i];
         }
-        result = sha.sha256(buf, outlen);
+        result = sha.sha256(buf, buflen, out, outlen);
         return result;
     }
 
     public Block encode(Block value, Block key) {
         System.out.println();
         System.out.println();
-        byte[] out = new byte[SHA256_HASH_SIZE];
-        byte[] tempKey = new byte[key.getSizeBytes()];
+        int[] out = new int[SHA256_HASH_SIZE];
+        int[] tempKey = new int[key.getSizeBytes()];
         for (int i = 0; i < key.getSizeBytes(); i++) {
-            tempKey[i] = (byte) key.getData()[i];
+            tempKey[i] = key.getData()[i] & 0xFF;
         }
-        byte[] tempData = new byte[value.getSizeBytes()];
+        int[] tempData = new int[value.getSizeBytes()];
         for (int i = 0; i < value.getSizeBytes(); i++) {
-            tempData[i] = (byte) value.getData()[i];
+            tempData[i] = value.getData()[i] & 0xFF;
         }
         hmac_sha256(tempKey, key.getSizeBytes(), tempData, value.getSizeBytes(), out,
                 out.length);

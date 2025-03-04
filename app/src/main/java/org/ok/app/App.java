@@ -19,7 +19,7 @@ public class App {
 
         HMAC hmac = new HMAC();
         //hmac.testPrint();
-        Block block = hmac.encode(new Block("hello".getBytes().length, "hello"), new Block("keykey".getBytes().length, "keykey"));
+        Block block = hmac.encode(new Block(message.getBytes().length, message), new Block("keykey".getBytes().length, "keykey"));
         for(char c : block.getData()){
             System.out.printf("%02x", (byte)c);
         }

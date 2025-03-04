@@ -3,16 +3,17 @@
  */
 package org.ok.app;
 
+import org.ok.app.ui.Window;
 import org.ok.protocols.caesar.CaesarCipher;
+
+import java.net.URI;
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-        String message = "hello, world!";
+        Client client = new Client(URI.create("ws://127.0.0.1:1234"));
+        client.connect();
 
-        CaesarCipher cipher = new CaesarCipher('B');
-
-        System.out.println("Original: " + message);
-        System.out.println("Encrypted: " + cipher.encrypt(message));
-        System.out.println("Decrypted: " + cipher.decrypt(cipher.encrypt(message)));
+        Window window = new Window(client);
     }
 }

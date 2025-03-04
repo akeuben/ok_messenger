@@ -6,7 +6,12 @@ plugins {
     id("buildlogic.java-application-conventions")
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
+    implementation("org.java-websocket:Java-WebSocket:1.6.0")
     implementation("org.apache.commons:commons-text")
     implementation(project(":communication"))
     implementation(project(":protocols"))

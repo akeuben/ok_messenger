@@ -6,6 +6,7 @@ package org.ok.app;
 import org.ok.protocols.Block;
 import org.ok.protocols.CaesarCipher;
 import org.ok.protocols.HMAC;
+import org.ok.protocols.HKDF;
 
 public class App {
     public static void main(String[] args) {
@@ -18,10 +19,24 @@ public class App {
         System.out.println("Decrypted: " + cipher.decrypt(cipher.encrypt(message)));
 
         HMAC hmac = new HMAC();
-        //hmac.testPrint();
-        Block block = hmac.encode(new Block(message.getBytes().length, message), new Block("keykey".getBytes().length, "keykey"));
-        for(char c : block.getData()){
-            System.out.printf("%02x", (byte)c);
+        // hmac.testPrint();
+        Block block = hmac.encode(new Block(message.getBytes().length, message),
+                new Block("keykey".getBytes().length, "keykey"));
+        for (char c : block.getData()) {
+            System.out.printf("%02x", (byte) c);
         }
+        System.out.println();
+        HKDF hkdf = new HKDF();
+        int[] salt = { 0x9, 0x0 };
+        int[] ikm = new int["hello".getBytes().length];
+        int[] info = { 0x8, 0x0 };
+        for (int i = 0; i < ikm.length; i++) {
+            ikm[i] = "hello".getBytes()[i] & 0xFF;
+        }
+        int[] okm = hkdf.hkdf(salt, ikm, info, 32);
+        for (int i = 0; i < okm.length; i++) {
+            System.out.printf("%02x", okm[i]);
+        }
+        System.out.println();
     }
 }

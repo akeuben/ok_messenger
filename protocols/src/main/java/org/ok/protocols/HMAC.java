@@ -32,7 +32,7 @@ public class HMAC {
         if (keylen > BLOCK_SIZE) {
             // If the key is larger than the hash algorithm's
             // block size, we must digest it first.
-            sha.sha256(key, k.length, out, outlen);
+            sha.sha256(key, out);
         } else {
             for (i = 0; i < keylen; i++) {
                 k[i] = (byte) key[i];
@@ -68,7 +68,7 @@ public class HMAC {
         for (int i = 0; i < ylen; i++) {
             buf[i + (int) xlen] = y[i];
         }
-        result = sha.sha256(buf, buflen, out, outlen);
+        result = sha.sha256(buf, out);
         return result;
     }
 

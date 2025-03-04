@@ -73,10 +73,6 @@ class SHA256 {
 
     // int
     long Ch(long x, long y, long z) {
-        System.out.printf("Ch: %02x\n",
-                ((z & 0xFFFFFFFFL)
-                        ^ (((x & 0xFFFFFFFFL) & (((y & 0xFFFFFFFFL) ^ (z & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL))
-                        & 0xFFFFFFFFL);
         return ((z & 0xFFFFFFFFL)
                 ^ (((x & 0xFFFFFFFFL) & (((y & 0xFFFFFFFFL) ^ (z & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL))
                 & 0xFFFFFFFFL;
@@ -268,16 +264,16 @@ class SHA256 {
         }
     }
 
-    int[] sha256(int[] data, long datalen, int[] out, long outlen) {
+    int[] sha256(int[] data, int[] out) {
         long sz;
         Sha256Context ctx = new Sha256Context();
         SHA256_HASH hash = new SHA256_HASH(SHA256_HASH_SIZE);
 
         Sha256Initialise(ctx);
-        Sha256Update(ctx, data, datalen);
+        Sha256Update(ctx, data, data.length);
         Sha256Finalise(ctx, hash);
 
-        sz = (outlen > SHA256_HASH_SIZE) ? SHA256_HASH_SIZE : outlen;
+        sz = (out.length > SHA256_HASH_SIZE) ? SHA256_HASH_SIZE : out.length;
         for (int i = 0; i < sz; i++) {
             out[i] = hash.bytes[i] & 0xFF;
         }

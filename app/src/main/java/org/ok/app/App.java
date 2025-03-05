@@ -8,6 +8,7 @@ import org.ok.protocols.CaesarCipher;
 import org.ok.protocols.HMAC;
 import org.ok.protocols.KDF;
 import org.ok.protocols.HKDF;
+import org.ok.protocols.caesar.CaesarCipher;
 
 public class App {
     public static void main(String[] args) {

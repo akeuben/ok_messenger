@@ -1,22 +1,26 @@
 package org.ok.protocols;
 
+import org.ok.protocols.aes.AESKey;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Block {
-    private final char[] data;
+    private final byte[] data;
     private int size;
 
     public Block(int size) {
         this.size = size;
-        data = new char[size];
+        data = new byte[size];
 
-        for (int i = 0; i < size; i++) {
+        for(int i = 0; i < size; i++) {
             data[i] = 0;
         }
     }
 
-    public Block(int sizeBytes, char[] data) {
+    public Block(int sizeBytes, byte[] data) {
         this(sizeBytes);
         setData(data);
     }
@@ -25,15 +29,11 @@ public class Block {
         this(sizeBytes);
         setData(data);
     }
-
     public Block(int sizeBytes, byte[] data) {
         this(sizeBytes);
         setData(data);
     }
 
-    private void setData(String data) {
-        setData(data.toCharArray());
-    }
 
     private void setData(char[] bytes) {
         for (int i = 0; i < size; i++) {
@@ -49,13 +49,29 @@ public class Block {
         for (int i = 0; i < size; i++) {
             if (i < bytes.length) {//This used to be bytes.length - 1
                 this.data[i] = (char)bytes[i];
+
+    public static Block fromHexString(String hexEncodedBlock) {
+        byte[] bytes = HexFormat.of().parseHex(hexEncodedBlock);
+
+        return new Block(bytes.length, bytes);
+    }
+
+    private void setData(String data) {
+        setData(data.getBytes(StandardCharsets.US_ASCII));
+    }
+
+    private void setData(byte[] bytes) {
+        for(int i = 0; i < size; i++) {
+            if(i < bytes.length) {
+                this.data[i] = bytes[i];
+
             } else {
                 this.data[i] = 0;
             }
         }
     }
 
-    public char[] getData() {
+    public byte[] getData() {
         return this.data;
     }
 
@@ -72,6 +88,9 @@ public class Block {
 
         for (int i = 0; i < size; i++) {
             newBlock.data[i] = (char) (data[i] ^ other.data[i]);
+
+        for(int i = 0; i < size; i++) {
+            newBlock.data[i] = (byte) (data[i] ^ other.data[i]);
         }
 
         return newBlock;
@@ -81,13 +100,17 @@ public class Block {
         Block newBlock = new Block(size);
 
         for (int i = 0; i < size; i++) {
+    public Block byteWiseOperation(Function<Byte, Byte> operation) {
+        Block newBlock = new Block(size);
+
+        for(int i = 0; i < size; i++) {
             newBlock.data[i] = operation.apply(data[i]);
         }
 
         return newBlock;
     }
 
-    public Block rowWiseOperation(BiFunction<Character[], Integer, Character[]> operation) {
+    public Block rowWiseOperation(BiFunction<Byte[], Integer, Byte[]> operation) {
         if (Math.sqrt(size) % 1 != 0)
             throw new RuntimeException("Row-wise operations can only be performed on square blocks!");
 
@@ -95,13 +118,13 @@ public class Block {
         Block newBlock = new Block(size);
 
         for (int i = 0; i < rowLength; i++) {
-            Character[] row = new Character[rowLength];
+            Byte[] row = new Byte[rowLength];
 
             for (int j = 0; j < rowLength; j++) {
                 row[j] = data[j * rowLength + i];
             }
 
-            Character[] newRow = operation.apply(row, i);
+            Byte[] newRow = operation.apply(row, i);
 
             for (int j = 0; j < rowLength; j++) {
                 newBlock.data[j * rowLength + i] = newRow[j];
@@ -111,7 +134,7 @@ public class Block {
         return newBlock;
     }
 
-    public Block columnWiseOperation(BiFunction<Character[], Integer, Character[]> operation) {
+    public Block columnWiseOperation(BiFunction<Byte[], Integer, Byte[]> operation) {
         if (Math.sqrt(size) % 1 != 0)
             throw new RuntimeException("Column-wise operations can only be performed on square blocks!");
 
@@ -119,13 +142,13 @@ public class Block {
         Block newBlock = new Block(size);
 
         for (int col = 0; col < rowLength; col++) {
-            Character[] column = new Character[rowLength];
+            Byte[] column = new Byte[rowLength];
 
             for (int row = 0; row < rowLength; row++) {
                 column[row] = data[col * rowLength + row];
             }
 
-            Character[] newColumn = operation.apply(column, col);
+            Byte[] newColumn = operation.apply(column, col);
 
             for (int row = 0; row < rowLength; row++) {
                 newBlock.data[col * rowLength + row] = newColumn[row];
@@ -135,4 +158,28 @@ public class Block {
         return newBlock;
     }
 
+}
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Block other) {
+            if(other.data.length != data.length) {
+                return false;
+            }
+            for (int i = 0; i < other.data.length; i++) {
+                if(other.data[i] != data[i]) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder hex = new StringBuilder();
+        for (byte datum : data) {
+            hex.append(HexFormat.of().toHexDigits(datum));
+        }
+
+        return hex.toString();
+    }
 }

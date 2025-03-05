@@ -27,13 +27,7 @@ public class App {
         }
         System.out.println();
         HKDF hkdf = new HKDF();
-        int[] salt = { 0x9, 0x0 };
-        int[] ikm = new int["hello".getBytes().length];
-        int[] info = { 0x8, 0x0 };
-        for (int i = 0; i < ikm.length; i++) {
-            ikm[i] = "hello".getBytes()[i] & 0xFF;
-        }
-        int[] okm = hkdf.hkdf(salt, ikm, info, 32);
+        byte[] okm = hkdf.hkdf("t".getBytes(), "hello".getBytes(), "t".getBytes(), 42);
         for (int i = 0; i < okm.length; i++) {
             System.out.printf("%02x", okm[i]);
         }

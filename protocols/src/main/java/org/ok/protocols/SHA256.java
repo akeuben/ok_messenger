@@ -1,3 +1,7 @@
+/*
+ * Joshua Liu
+ */
+
 package org.ok.protocols;
 
 class Sha256Context {
@@ -43,7 +47,6 @@ class SHA256 {
         return y;
     }
 
-    // TODO FIX BELOW
     long ror(long value, long bits) {
         return ((((value & 0xFFFFFFFFL) >> (bits & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 | (((value & 0xFFFFFFFFL) << ((32 - (bits & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
@@ -276,6 +279,26 @@ class SHA256 {
         sz = (out.length > SHA256_HASH_SIZE) ? SHA256_HASH_SIZE : out.length;
         for (int i = 0; i < sz; i++) {
             out[i] = hash.bytes[i] & 0xFF;
+        }
+        return out;
+    }
+
+    byte[] sha256(byte[] data, byte[] out) {
+        long sz;
+        Sha256Context ctx = new Sha256Context();
+        SHA256_HASH hash = new SHA256_HASH(SHA256_HASH_SIZE);
+
+        Sha256Initialise(ctx);
+        int[] temp = new int[data.length];
+        for (int i = 0; i < data.length; i++) {
+            temp[i] = data[i] & 0xFF;
+        }
+        Sha256Update(ctx, temp, data.length);
+        Sha256Finalise(ctx, hash);
+
+        sz = (out.length > SHA256_HASH_SIZE) ? SHA256_HASH_SIZE : out.length;
+        for (int i = 0; i < sz; i++) {
+            out[i] = (byte) (hash.bytes[i] & 0xFF);
         }
         return out;
     }

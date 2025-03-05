@@ -26,6 +26,11 @@ public class Block {
         setData(data);
     }
 
+    public Block(int sizeBytes, byte[] data) {
+        this(sizeBytes);
+        setData(data);
+    }
+
     private void setData(String data) {
         setData(data.toCharArray());
     }
@@ -34,6 +39,16 @@ public class Block {
         for (int i = 0; i < size; i++) {
             if (i < bytes.length) {//This used to be bytes.length - 1
                 this.data[i] = bytes[i];
+            } else {
+                this.data[i] = 0;
+            }
+        }
+    }
+
+    private void setData(byte[] bytes) {
+        for (int i = 0; i < size; i++) {
+            if (i < bytes.length) {//This used to be bytes.length - 1
+                this.data[i] = (char)bytes[i];
             } else {
                 this.data[i] = 0;
             }

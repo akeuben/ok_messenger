@@ -48,6 +48,9 @@ public class HMAC {
         // `H(K XOR opad, H(K XOR ipad, data))`
         ihash = H(k_ipad, k_ipad.length, data, datalen, ihash, ihash.length);
 
+        for(i = 0; i < ihash.length;i++){
+            System.out.printf("Ihash %02x\n", ihash[i]);
+        }
         ohash = H(k_opad, k_opad.length, ihash, ihash.length, ohash, ohash.length);
 
         sz = (outlen > SHA256_HASH_SIZE) ? SHA256_HASH_SIZE : outlen;
@@ -73,8 +76,6 @@ public class HMAC {
     }
 
     public Block encode(Block value, Block key) {
-        System.out.println();
-        System.out.println();
         int[] out = new int[SHA256_HASH_SIZE];
         int[] tempKey = new int[key.getSizeBytes()];
         for (int i = 0; i < key.getSizeBytes(); i++) {
@@ -90,6 +91,7 @@ public class HMAC {
         for (int i = 0; i < out.length; i++) {
             charOut[i] = (char) out[i];
         }
+
         return new Block(SHA256_HASH_SIZE, charOut);
     }
 }

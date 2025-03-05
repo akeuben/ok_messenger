@@ -6,6 +6,7 @@ package org.ok.app;
 import org.ok.protocols.Block;
 import org.ok.protocols.CaesarCipher;
 import org.ok.protocols.HMAC;
+import org.ok.protocols.KDF;
 import org.ok.protocols.HKDF;
 
 public class App {
@@ -27,10 +28,18 @@ public class App {
         }
         System.out.println();
         HKDF hkdf = new HKDF();
-        byte[] okm = hkdf.hkdf("t".getBytes(), "hello".getBytes(), "t".getBytes(), 42);
+        byte[] okm = hkdf.hkdf("t".getBytes(), "hello".getBytes(), "t".getBytes(), 80);
         for (int i = 0; i < okm.length; i++) {
             System.out.printf("%02x", okm[i]);
         }
         System.out.println();
+        KDF kdf = new KDF();
+        byte[][] output = kdf.kdf_ck("hello".getBytes());
+        for (byte[] by : output) {
+            for (byte b : by) {
+                System.out.printf("%02x", b);
+            }
+            System.out.println();
+        }
     }
 }

@@ -1,15 +1,13 @@
 package org.ok.protocols.x3dh;
 
 import org.ok.protocols.Block;
-import org.ok.protocols.HKDF;
-import org.ok.protocols.SHA256;
 import org.ok.protocols.diffiehellman.DiffieHellman;
+import org.ok.protocols.kdf.HKDF;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 
 public class X3DH {
     private static final Block protocolName = new Block("OkMessenger");
-    private static final SHA256 sha = new SHA256();
     private static final HKDF hkdf = new HKDF();
 
     private static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
@@ -48,14 +46,14 @@ public class X3DH {
             Block DH2 = new Block(DiffieHellman.Run(ephemeralKey.getPrivateKey(), prekeyBundle.getIdentityKey().getData()));
             Block DH3 = new Block(DiffieHellman.Run(ephemeralKey.getPrivateKey(), prekeyBundle.getSignedPrekey().getData()));
 
-            return new X3DHResult(new Block(hkdf.hkdf(new Block(32).getData(), Block.concat(DH1, DH2, DH3).getData(), protocolName.getData(), 32)), AD, new Block(ephemeralKey.getPublicKey()));
+            return new X3DHResult(hkdf.hkdf(new Block(32), Block.concat(DH1, DH2, DH3), protocolName, 32), AD, new Block(ephemeralKey.getPublicKey()));
         } else {
             Block DH1 = new Block(DiffieHellman.Run(keyPair.getPrivateKey(), prekeyBundle.getSignedPrekey().getData()));
             Block DH2 = new Block(DiffieHellman.Run(ephemeralKey.getPrivateKey(), prekeyBundle.getIdentityKey().getData()));
             Block DH3 = new Block(DiffieHellman.Run(ephemeralKey.getPrivateKey(), prekeyBundle.getSignedPrekey().getData()));
             Block DH4 = new Block(DiffieHellman.Run(ephemeralKey.getPrivateKey(), prekeyBundle.getOneTimePrekey().getData()));
 
-            return new X3DHResult(new Block(hkdf.hkdf(new Block(32).getData(), Block.concat(DH1, DH2, DH3, DH4).getData(), protocolName.getData(), 32)), AD, new Block(ephemeralKey.getPublicKey()));
+            return new X3DHResult(hkdf.hkdf(new Block(32), Block.concat(DH1, DH2, DH3, DH4), protocolName, 32), AD, new Block(ephemeralKey.getPublicKey()));
         }
     }
 
@@ -68,14 +66,14 @@ public class X3DH {
             Block DH2 = new Block(DiffieHellman.Run(identityKey.getPrivateKey(), ephemeralKey)); // DH(EK_A, IK_B)
             Block DH3 = new Block(DiffieHellman.Run(signedPrekey.getPrivateKey(), ephemeralKey)); // DH(EK_A, SPK_B)
 
-            return new X3DHResult(new Block(hkdf.hkdf(new Block(32).getData(), Block.concat(DH1, DH2, DH3).getData(), protocolName.getData(), 32)), AD, new Block(ephemeralKey));
+            return new X3DHResult(hkdf.hkdf(new Block(32), Block.concat(DH1, DH2, DH3), protocolName, 32), AD, new Block(ephemeralKey));
         } else {
             Block DH1 = new Block(DiffieHellman.Run(signedPrekey.getPrivateKey(), message.getIdentityKey().getData())); // DH(IK_A, SPK_B)
             Block DH2 = new Block(DiffieHellman.Run(identityKey.getPrivateKey(), ephemeralKey)); // DH(EK_A, IK_B)
             Block DH3 = new Block(DiffieHellman.Run(signedPrekey.getPrivateKey(), ephemeralKey)); // DH(EK_A, SPK_B)
             Block DH4 = new Block(DiffieHellman.Run(oneTimePrekey.getPrivateKey(), ephemeralKey));  // DH(EK_A, OPK_B)
 
-            return new X3DHResult(new Block(hkdf.hkdf(new Block(32).getData(), Block.concat(DH1, DH2, DH3, DH4).getData(), protocolName.getData(), 32)), AD, new Block(ephemeralKey));
+            return new X3DHResult(hkdf.hkdf(new Block(32), Block.concat(DH1, DH2, DH3, DH4), protocolName, 32), AD, new Block(ephemeralKey));
         }
     }
 }

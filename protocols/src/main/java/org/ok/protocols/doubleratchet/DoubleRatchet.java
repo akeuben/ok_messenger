@@ -50,7 +50,6 @@ public class DoubleRatchet {
         Nr = 0;
         PN = 0;
         MKSKIPPED = new HashMap<>();
-
     }
 
     /**
@@ -77,7 +76,7 @@ public class DoubleRatchet {
         CKs = res[1];
         DoubleRatchetMessageHeader header = new DoubleRatchetMessageHeader(DHs.getPublic(), PN, Ns);
         Ns += 1;
-        return new DoubleRatchetMessage(aead.encrypt(plaintext, mk, AD), header);
+        return new DoubleRatchetMessage(aead.encrypt(plaintext, mk, header.toBlock(AD)), header);
     }
 
     public Block decrypt(DoubleRatchetMessage message, Block AD) {
@@ -94,7 +93,7 @@ public class DoubleRatchet {
         AESKey mk = new AESKey(res[0].getData());
         CKr = res[1];
         Nr += 1;
-        return aead.decrypt(message.data, mk, AD);
+        return aead.decrypt(message.data, mk, message.header.toBlock(AD));
     }
 
     private void ratchet(DoubleRatchetMessageHeader header) {
@@ -139,7 +138,7 @@ public class DoubleRatchet {
             Map<Long, AESKey> map = MKSKIPPED.get(message.header.pubKey);
             if (map.containsKey(message.header.n)) {
                 AESKey mk = map.remove(message.header.n);
-                return aead.decrypt(message.data, mk, AD);
+                return aead.decrypt(message.data, mk, message.header.toBlock(AD));
             }
         }
         return null;

@@ -21,7 +21,7 @@ public class DoubleRatchetTest {
         DoubleRatchet bob = new DoubleRatchet(SK, bobKeyPair);
         DoubleRatchet alice = new DoubleRatchet(SK, bobKeyPair.getPublic());
 
-        Block AD = Block.fromHexString("44116f1a6af9c79c");
+        Block AD = Block.fromHexString("44116f1a6af9c79c123B8A12");
 
         DoubleRatchetMessage encyrpted = alice.encrypt(new Block("Hello, World!"), AD);
         Block decrypted = bob.decrypt(encyrpted, AD);

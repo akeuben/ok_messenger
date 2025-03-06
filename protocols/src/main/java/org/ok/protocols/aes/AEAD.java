@@ -22,7 +22,6 @@ public class AEAD {
         Block iv = hkdfMaterial.subData(64, 80);
 
         Block encryptedData = aes.encrypt(data, iv, encKey);
-        System.out.println(encryptedData);
         Block authentectedData = hmac.encode(Block.concat(associated_data, encryptedData), authKey);
 
         return Block.concat(authentectedData, encryptedData);
@@ -36,7 +35,6 @@ public class AEAD {
 
         Block actualHMAC = data.subData(0, 32);
         Block encryptedData = data.subData(32, data.getSizeBytes());
-        System.out.println(encryptedData);
 
         Block plaintext = aes.decrypt(encryptedData, encKey);
         Block expectedHMAC = hmac.encode(Block.concat(associated_data, encryptedData), authKey);

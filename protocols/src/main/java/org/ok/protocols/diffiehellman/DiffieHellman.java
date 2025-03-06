@@ -1,5 +1,8 @@
 package org.ok.protocols.diffiehellman;
 
+import org.whispersystems.curve25519.Curve25519;
+import org.whispersystems.curve25519.Curve25519KeyPair;
+
 import javax.crypto.KeyAgreement;
 import java.security.*;
 import java.security.spec.NamedParameterSpec;
@@ -21,5 +24,9 @@ public class DiffieHellman {
         } catch (Exception e) {
             throw new RuntimeException("uh oh");
         }
+    }
+
+    public static byte[] Run(byte[] privateKey, byte[] publicKey) {
+        return Curve25519.getInstance(Curve25519.BEST).calculateAgreement(publicKey, privateKey);
     }
 }

@@ -1,9 +1,7 @@
 package org.ok.protocols.diffiehellman;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import javax.crypto.KeyAgreement;
+import java.security.*;
 import java.security.spec.NamedParameterSpec;
 
 public class DiffieHellman {
@@ -12,5 +10,16 @@ public class DiffieHellman {
         NamedParameterSpec spec = new NamedParameterSpec("X25519");
         kpg.initialize(spec);
         return kpg.generateKeyPair();
+    }
+
+    public static byte[] Run(KeyPair kp, PublicKey pubKey) {
+        try {
+            KeyAgreement ka = KeyAgreement.getInstance("XDH");
+            ka.init(kp.getPrivate());
+            ka.doPhase(pubKey, true);
+            return ka.generateSecret();
+        } catch (Exception e) {
+            throw new RuntimeException("uh oh");
+        }
     }
 }

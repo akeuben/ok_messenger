@@ -4,7 +4,6 @@
 package org.ok.app;
 
 import org.ok.protocols.Block;
-import org.ok.protocols.CaesarCipher;
 import org.ok.protocols.HMAC;
 import org.ok.protocols.KDF;
 import org.ok.protocols.HKDF;
@@ -14,7 +13,7 @@ public class App {
     public static void main(String[] args) {
         String message = "hello, world!";
 
-        CaesarCipher cipher = new CaesarCipher('B');
+        CaesarCipher cipher = new CaesarCipher((byte) 'B');
 
         System.out.println("Original: " + message);
         System.out.println("Encrypted: " + cipher.encrypt(message));
@@ -24,7 +23,7 @@ public class App {
         // hmac.testPrint();
         Block block = hmac.encode(new Block(message.getBytes().length, message),
                 new Block("keykey".getBytes().length, "keykey"));
-        for (char c : block.getData()) {
+        for (byte c : block.getData()) {
             System.out.printf("%02x", (byte) c);
         }
         System.out.println();

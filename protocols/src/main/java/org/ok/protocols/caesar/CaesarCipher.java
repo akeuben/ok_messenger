@@ -2,19 +2,19 @@ package org.ok.protocols.caesar;
 
 public class CaesarCipher {
 
-    private char key;
+    private byte key;
 
-    public CaesarCipher(char key) {
-        this.key = (char) (key - 'A');
+    public CaesarCipher(byte key) {
+        this.key = (byte) (key - 'A');
     }
 
     public String encrypt(String message) {
-        char[] plaintext = message.toLowerCase().toCharArray();
-        char[] ciphertext = new char[message.length()];
+        byte[] plaintext = message.toLowerCase().getBytes();
+        byte[] ciphertext = new byte[message.length()];
 
         for(int i = 0; i < plaintext.length; i++) {
             if('a' <= plaintext[i] && plaintext[i] <= 'z') {
-                ciphertext[i] = (char) ('A' + (plaintext[i] + key - 'A'));
+                ciphertext[i] = (byte) ('A' + (plaintext[i] + key - 'A'));
             } else {
                 ciphertext[i] = plaintext[i];
             }
@@ -24,13 +24,13 @@ public class CaesarCipher {
     }
 
     public String decrypt(String ctext) {
-        char[] plaintext = new char[ctext.length()];
-        char[] ciphertext = ctext.toCharArray();
+        byte[] plaintext = new byte[ctext.length()];
+        byte[] ciphertext = ctext.getBytes();
 
 
         for(int i = 0; i < ciphertext.length; i++) {
             if('a' <= ciphertext[i] && ciphertext[i] <= 'z') {
-                plaintext[i] = (char) (ciphertext[i] - key);
+                plaintext[i] = (byte) (ciphertext[i] - key);
             } else {
                 plaintext[i] = ciphertext[i];
             }

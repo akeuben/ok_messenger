@@ -8,8 +8,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SHA256Test {
     
-    @Test void testConstructor() {
+    @Test void testSHA256() {
         SHA256 sha256 = new SHA256();
-        assertEquals(0, sha256.sha256(new int[]{0x9382,0x456}, new int[]{0x12,12}));
+
+        byte[] out = new byte[32];
+        Block msg = new Block("This is a test");
+
+        sha256.sha256(msg.getData(), out);
+
+        Block expected = Block.fromHexString("c7be1ed902fb8dd4d48997c6452f5d7e509fbcdbe2808b16bcf4edce4c07d14e");
+
+        assertEquals(expected, new Block(out));
     }
 }

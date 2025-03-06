@@ -17,7 +17,7 @@ public class DoubleRatchetMessageHeader {
     }
 
     public Block toBlock(Block associatedData) {
-        Block associatedDataLength = new Block(4, ByteBuffer.allocate(Integer.BYTES).putInt(associatedData.getSizeBytes()).array())
+        Block associatedDataLength = new Block(4, ByteBuffer.allocate(Integer.BYTES).putInt(associatedData.getSizeBytes()).array());
 
         Block pubKeyBlock = new Block(pubKey.getEncoded());
         Block pnBlock = new Block(ByteBuffer.allocate(Long.BYTES).putLong(pn).array());

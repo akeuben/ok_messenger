@@ -1,7 +1,9 @@
 package org.ok.protocols.doubleratchet;
 
 import org.ok.protocols.Block;
-import org.ok.protocols.aes.AEAD_AESCTR_HMAC;
+import org.ok.protocols.KDF;
+import org.ok.protocols.aes.AEAD;
+import org.ok.protocols.aes.AESKey;
 import org.ok.protocols.diffiehellman.DiffieHellman;
 
 import java.security.*;
@@ -11,33 +13,37 @@ import java.util.Map;
 public class DoubleRatchet {
     private static final int MAX_SKIP = 100;
 
-    private AEAD_AESCTR_HMAC aes = new AEAD_AESCTR_HMAC();
+    private final KDF kdf = new KDF();
+
+    private AEAD aead = new AEAD();
 
     private KeyPair DHs;
     private PublicKey DHr;
 
-    private Key RK;
+    private Block RK;
 
-    Key CKs, CKr;
+    private Block CKs, CKr;
     long Ns, Nr;
 
     long PN;
 
-    Map<PublicKey, Map<Long, Key>> MKSKIPPED;
+    Map<PublicKey, Map<Long, AESKey>> MKSKIPPED;
 
     /**
      * Creates a double ratchet for a scheme started by another party
      * @param SK The shared secret key
      * @param otherPublicKey The other user's public key
      */
-    public DoubleRatchet(Key SK, PublicKey otherPublicKey) {
+    public DoubleRatchet(Block SK, PublicKey otherPublicKey) {
         try {
             DHs = DiffieHellman.GenerateKeyPair();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
-        RK, CKs = KDF_RK(SK, DH(DHs, DHr));
         DHr = otherPublicKey;
+        byte[][] val = kdf.kdf_rf(SK.getData(), DiffieHellman.Run(DHs, DHr));
+        RK = new Block(val[0]);
+        CKs = new Block(val[1]);
         CKr = null;
         Ns = 0;
         Nr = 0;
@@ -51,7 +57,7 @@ public class DoubleRatchet {
      * @param SK The shared secret key
      * @param myKeyPair Your key pair
      */
-    public DoubleRatchet(Key SK, KeyPair myKeyPair) {
+    public DoubleRatchet(Block SK, KeyPair myKeyPair) {
         DHs = myKeyPair;
         DHr = null;
         RK = SK;
@@ -64,10 +70,12 @@ public class DoubleRatchet {
     }
 
     public DoubleRatchetMessage encrypt(Block plaintext, Block AD) {
-        CKs, mk = KDF_CK(CKs);
+        byte[][] res = kdf.kdf_ck(CKs.getData());
+        AESKey mk = new AESKey(res[0]);
+        CKs = new Block(res[1]);
         DoubleRatchetMessageHeader header = new DoubleRatchetMessageHeader(DHs.getPublic(), PN, Ns);
         Ns += 1;
-        return new DoubleRatchetMessage(header, aes.encrypt(mk, plaintext, header.toBlock(AD)));
+        return new DoubleRatchetMessage(aead.encrypt(plaintext, mk, AD), header);
     }
 
     public Block decrypt(DoubleRatchetMessage message, Block AD) {
@@ -80,9 +88,11 @@ public class DoubleRatchet {
             ratchet(message.header);
         }
         skipMessageKeys(message.header.n);
-        CKr, mk = KDF_CK(CKr);
+        byte[][] res = kdf.kdf_ck(CKr.getData());
+        AESKey mk = new AESKey(res[0]);
+        CKr = new Block(res[1]);
         Nr += 1;
-        return aes.decrypt(mk, message.data, message.header.toBlock(AD));
+        return aead.decrypt(message.data, mk, AD);
     }
 
     private void ratchet(DoubleRatchetMessageHeader header) {
@@ -90,13 +100,17 @@ public class DoubleRatchet {
         Ns = 0;
         Nr = 0;
         DHr = header.pubKey;
-        RK, CKr = KDF_RK(RK, DH(DHs, DHr));
+        byte[][] res = kdf.kdf_rf(RK.getData(), DiffieHellman.Run(DHs, DHr));
+        RK = new Block(res[0]);
+        CKr = new Block(res[1]);
         try {
             DHs = DiffieHellman.GenerateKeyPair();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
-        RK, CKs = KDF_RK(RK, DH(DHs, DHr));
+        res = kdf.kdf_rf(RK.getData(), DiffieHellman.Run(DHs, DHr));
+        RK = new Block(res[0]);
+        CKs = new Block(res[1]);
     }
 
     private void skipMessageKeys(long until) {
@@ -105,7 +119,9 @@ public class DoubleRatchet {
         }
         if(CKr != null) {
             while(Nr < until) {
-                CKr, mk = KDF_CK(CKr);
+                byte[][] res = kdf.kdf_ck(CKr.getData());
+                AESKey mk = new AESKey(res[0]);
+                CKr = new Block(res[1]);
                 if(!MKSKIPPED.containsKey(DHr)) {
                     MKSKIPPED.put(DHr, new HashMap<>());
                 }
@@ -117,10 +133,10 @@ public class DoubleRatchet {
 
     private Block trySkippedMessageKeys(DoubleRatchetMessage message, Block AD) {
         if(MKSKIPPED.containsKey(message.header.pubKey)) {
-            Map<Long, Key> map = MKSKIPPED.get(message.header.pubKey);
+            Map<Long, AESKey> map = MKSKIPPED.get(message.header.pubKey);
             if(map.containsKey(message.header.n)) {
-                Key mk = map.remove(message.header.n);
-                return aes.decrypt(mk.getEncoded(), message.data, message.header.toBlock(AD));
+                AESKey mk = map.remove(message.header.n);
+                return aead.decrypt(message.data, mk, AD);
             }
         }
         return null;

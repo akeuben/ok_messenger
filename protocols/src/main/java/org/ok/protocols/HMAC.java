@@ -83,11 +83,11 @@ public class HMAC {
         }
         hmac_sha256(tempKey, key.getSizeBytes(), tempData, value.getSizeBytes(), out,
                 out.length);
-        char[] charOut = new char[SHA256_HASH_SIZE];
+        byte[] byteOut = new byte[SHA256_HASH_SIZE];
         for (int i = 0; i < out.length; i++) {
-            charOut[i] = (char) out[i];
+            byteOut[i] = (byte) out[i];
         }
 
-        return new Block(SHA256_HASH_SIZE, charOut);
+        return new Block(SHA256_HASH_SIZE, byteOut);
     }
 }

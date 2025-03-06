@@ -20,11 +20,6 @@ public class Block {
         }
     }
 
-    public Block(int sizeBytes, byte[] data) {
-        this(sizeBytes);
-        setData(data);
-    }
-
     public Block(int sizeBytes, String data) {
         this(sizeBytes);
         setData(data);
@@ -35,20 +30,6 @@ public class Block {
     }
 
 
-    private void setData(char[] bytes) {
-        for (int i = 0; i < size; i++) {
-            if (i < bytes.length) {//This used to be bytes.length - 1
-                this.data[i] = bytes[i];
-            } else {
-                this.data[i] = 0;
-            }
-        }
-    }
-
-    private void setData(byte[] bytes) {
-        for (int i = 0; i < size; i++) {
-            if (i < bytes.length) {//This used to be bytes.length - 1
-                this.data[i] = (char)bytes[i];
 
     public static Block fromHexString(String hexEncodedBlock) {
         byte[] bytes = HexFormat.of().parseHex(hexEncodedBlock);
@@ -86,9 +67,6 @@ public class Block {
     public Block xor(Block other) {
         Block newBlock = new Block(size);
 
-        for (int i = 0; i < size; i++) {
-            newBlock.data[i] = (char) (data[i] ^ other.data[i]);
-
         for(int i = 0; i < size; i++) {
             newBlock.data[i] = (byte) (data[i] ^ other.data[i]);
         }
@@ -96,10 +74,6 @@ public class Block {
         return newBlock;
     }
 
-    public Block byteWiseOperation(Function<Character, Character> operation) {
-        Block newBlock = new Block(size);
-
-        for (int i = 0; i < size; i++) {
     public Block byteWiseOperation(Function<Byte, Byte> operation) {
         Block newBlock = new Block(size);
 
@@ -158,7 +132,7 @@ public class Block {
         return newBlock;
     }
 
-}
+
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Block other) {

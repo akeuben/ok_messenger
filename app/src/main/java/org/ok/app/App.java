@@ -4,43 +4,34 @@
 package org.ok.app;
 
 import org.ok.protocols.Block;
-import org.ok.protocols.CaesarCipher;
-import org.ok.protocols.HMAC;
 import org.ok.protocols.KDF;
+import org.ok.protocols.hmacsha256.HMAC;
 import org.ok.protocols.HKDF;
-import org.ok.protocols.caesar.CaesarCipher;
 
 public class App {
     public static void main(String[] args) {
         String message = "hello, world!";
-
-        CaesarCipher cipher = new CaesarCipher('B');
-
-        System.out.println("Original: " + message);
-        System.out.println("Encrypted: " + cipher.encrypt(message));
-        System.out.println("Decrypted: " + cipher.decrypt(cipher.encrypt(message)));
-
         HMAC hmac = new HMAC();
         // hmac.testPrint();
         Block block = hmac.encode(new Block(message.getBytes().length, message),
                 new Block("keykey".getBytes().length, "keykey"));
-        for (char c : block.getData()) {
-            System.out.printf("%02x", (byte) c);
+        for (byte c : block.getData()) {
+            System.out.printf("%02x", c);
         }
         System.out.println();
-        HKDF hkdf = new HKDF();
-        byte[] okm = hkdf.hkdf("t".getBytes(), "hello".getBytes(), "t".getBytes(), 80);
-        for (int i = 0; i < okm.length; i++) {
-            System.out.printf("%02x", okm[i]);
-        }
-        System.out.println();
-        KDF kdf = new KDF();
-        byte[][] output = kdf.kdf_ck("hello".getBytes());
-        for (byte[] by : output) {
-            for (byte b : by) {
-                System.out.printf("%02x", b);
-            }
-            System.out.println();
-        }
+        // HKDF hkdf = new HKDF();
+        // byte[] okm = hkdf.hkdf("t".getBytes(), "hello".getBytes(), "t".getBytes(), 80);
+        // for (int i = 0; i < okm.length; i++) {
+        //     System.out.printf("%02x", okm[i]);
+        // }
+        // System.out.println();
+        // KDF kdf = new KDF();
+        // byte[][] output = kdf.kdf_ck("hello".getBytes());
+        // for (byte[] by : output) {
+        //     for (byte b : by) {
+        //         System.out.printf("%02x", b);
+        //     }
+        //     System.out.println();
+        // }
     }
 }

@@ -1,5 +1,7 @@
 package org.ok.protocols;
 
+import org.ok.protocols.hmacsha256.HMAC;
+
 /*
  * Joshua Liu
  * KDF_RF & KDF_CK
@@ -13,30 +15,19 @@ public class KDF {
 
     }
 
-    public byte[][] kdf_rf(byte[] rk, byte[] dhOut) {
-        byte[][] output = new byte[2][0];
+    public Block[]kdf_rk(byte[] rk, byte[] dhOut) {
+        Block[] output = new Block[2];
         output[0] = new HKDF().hkdf(rk, dhOut, new byte[0], 32);
         output[1] = new HKDF().hkdf(rk, dhOut, new byte[0], 32);
         return output;
     }
 
     // Output is message key [0], then chain key [1]
-    public byte[][] kdf_ck(byte[] ck) {
-        int[][] output = new int[2][32];
-        int[] temp = new int[ck.length];
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = ck[i];
-        }
-        output[0] = new HMAC().hmac_sha256(temp, temp.length, new int[] { 0, 1 }, 2, output[0], 32);// message
-        output[1] = new HMAC().hmac_sha256(temp, temp.length, new int[] { 0, 2 }, 2, output[1], 32);
-        byte[][] tempO = new byte[2][0];
-        tempO[0] = new byte[output[0].length];
-        tempO[1] = new byte[output[1].length];
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < output[i].length; j++) {
-                tempO[i][j] = (byte) (output[i][j] & 0xFF);
-            }
-        }
-        return tempO;
+    public Block[]kdf_ck(byte[] ck) {
+        Block[] output = new Block[2];
+        Block ckBlock = new Block(ck.length, ck);
+        output[0] = new HMAC().encode(ckBlock, new Block(2, new byte[] { 0, 1 })); // message
+        output[1] = new HMAC().encode(ckBlock, new Block(2, new byte[] { 0, 2 })); // key
+        return output;
     }
 }

@@ -1,22 +1,26 @@
+/*
+ * Joshua Liu
+ * HMAC implementation that calls SHA256 implementation
+ */
 package org.ok.protocols.hmacsha256;
 
 import org.ok.protocols.Block;
 
 public class HMAC {
 
-    protected final int SHA256_HASH_SIZE = 32;
-    protected final int BLOCK_SIZE = 64;
+    private final int SHA256_HASH_SIZE = 32;
+    private final int BLOCK_SIZE = 64;
 
-    protected SHA256 sha;
+    private SHA256 sha;
 
     public HMAC() {
         sha = new SHA256();
     }
 
-    Block hmac_sha256(Block key, Block data) {
+    private Block hmacSha256(Block key, Block data) {
         int[] k = new int[BLOCK_SIZE];
-        int[] k_ipad = new int[BLOCK_SIZE];
-        int[] k_opad = new int[BLOCK_SIZE];
+        int[] kIpad = new int[BLOCK_SIZE];
+        int[] kOpad = new int[BLOCK_SIZE];
         Block ihash = new Block(SHA256_HASH_SIZE);
         Block ohash = new Block(SHA256_HASH_SIZE);
         int keylen = key.getSizeBytes();
@@ -26,10 +30,10 @@ public class HMAC {
             k[i] = 0;
         }
         for (i = 0; i < BLOCK_SIZE; i++) {
-            k_ipad[i] = 0x36;
+            kIpad[i] = 0x36;
         }
         for (i = 0; i < BLOCK_SIZE; i++) {
-            k_opad[i] = 0x5c;
+            kOpad[i] = 0x5c;
         }
 
         if (keylen > BLOCK_SIZE) {
@@ -43,19 +47,19 @@ public class HMAC {
         }
 
         for (i = 0; i < BLOCK_SIZE; i++) {
-            k_ipad[i] ^= k[i];
-            k_opad[i] ^= k[i];
+            kIpad[i] ^= k[i];
+            kOpad[i] ^= k[i];
         }
 
         // Perform HMAC algorithm: ( https://tools.ietf.org/html/rfc2104 )
         // `H(K XOR opad, H(K XOR ipad, data))`
-        ihash = H(k_ipad, k_ipad.length, data, datalen, ihash.getSizeBytes());
-        ohash = H(k_opad, k_opad.length, ihash, ihash.getSizeBytes(), ohash.getSizeBytes());
+        ihash = H(kIpad, kIpad.length, data, datalen, ihash.getSizeBytes());
+        ohash = H(kOpad, kOpad.length, ihash, ihash.getSizeBytes(), ohash.getSizeBytes());
 
         return ohash;
     }
 
-    Block H(int[] x, long xlen, Block y, long ylen, long outlen) {
+    private Block H(int[] x, long xlen, Block y, long ylen, long outlen) {
         long buflen = (xlen + ylen);
         int[] buf = new int[(int) buflen];
 
@@ -73,6 +77,6 @@ public class HMAC {
     }
 
     public Block encode(Block value, Block key) {
-        return hmac_sha256(key, value);
+        return hmacSha256(key, value);
     }
 }

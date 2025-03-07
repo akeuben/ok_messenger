@@ -1,6 +1,7 @@
 package org.ok.protocols.kdf;
 /*
  * Joshua Liu
+ * HKDF implementation
 */
 
 import org.ok.protocols.Block;
@@ -21,7 +22,6 @@ public class HKDF {
         if (salt.length == 0) {
             salt = new byte[32];
         }
-
         return hmacDigest(salt, ikm);
     }
 

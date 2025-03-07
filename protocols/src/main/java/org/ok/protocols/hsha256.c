@@ -329,7 +329,7 @@ static void *H(uint8_t *x, uint64_t xlen, uint8_t *y, uint64_t ylen, uint8_t *ou
 // Wrapper for sha256
 static void *sha256(char *data, uint64_t datalen, uint8_t *out, uint64_t outlen);
 
-uint64_t hmac_sha256(char *key, uint64_t keylen, char *data, uint64_t datalen, uint8_t *out, uint64_t outlen)
+uint64_t hmacSha256(char *key, uint64_t keylen, char *data, uint64_t datalen, uint8_t *out, uint64_t outlen)
 {
     uint8_t k[SHA256_BLOCK_SIZE];
     uint8_t k_ipad[SHA256_BLOCK_SIZE];
@@ -423,7 +423,7 @@ int main()
     unsigned i;
 
     // Call hmac-sha256 function
-    hmac_sha256(str_key, strlen(str_key), str_data, strlen(str_data), out,
+    hmacSha256(str_key, strlen(str_key), str_data, strlen(str_data), out,
                 sizeof(out));
     // Convert `out` to string with printf
     memset(&out_str, 0, sizeof(out_str));

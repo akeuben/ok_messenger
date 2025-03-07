@@ -1,5 +1,6 @@
 /*
  * Joshua Liu
+ * SHA256 implementation
  * Using long to represent an unsigned int
  * Using int to represetn an unsigned byte
  */
@@ -29,12 +30,12 @@ public class SHA256 {
         }
     }
 
-    final int SHA256_HASH_SIZE = 256 / 8;
-    final int BLOCK_SIZE = 64;
-    final int SHA256_BLOCK_SIZE = 64;
+    private final int SHA256_HASH_SIZE = 256 / 8;
+    private final int BLOCK_SIZE = 64;
+    private final int SHA256_BLOCK_SIZE = 64;
 
     // Predefined constants for sha256
-    long[] K = {
+    private long[] K = {
             0x428a2f98L, 0x71374491L, 0xb5c0fbcfL, 0xe9b5dba5L, 0x3956c25bL, 0x59f111f1L, 0x923f82a4L, 0xab1c5ed5L,
             0xd807aa98L, 0x12835b01L, 0x243185beL, 0x550c7dc3L, 0x72be5d74L, 0x80deb1feL, 0x9bdc06a7L, 0xc19bf174L,
             0xe49b69c1L, 0xefbe4786L, 0x0fc19dc6L, 0x240ca1ccL, 0x2de92c6fL, 0x4a7484aaL, 0x5cb0a9dcL, 0x76f988daL,
@@ -44,7 +45,7 @@ public class SHA256 {
             0x19a4c116L, 0x1e376c08L, 0x2748774cL, 0x34b0bcb5L, 0x391c0cb3L, 0x4ed8aa4aL, 0x5b9cca4fL, 0x682e6ff3L,
             0x748f82eeL, 0x78a5636fL, 0x84c87814L, 0x8cc70208L, 0x90befffaL, 0xa4506cebL, 0xbef9a3f7L, 0xc67178f2L };
 
-    int[] store32h(long x, int[] y, int offset) {
+    private int[] store32h(long x, int[] y, int offset) {
         y[0 + offset] = (int) (((x & 0xFFFFFFFFL) >> 24) & 0xFF);
         y[1 + offset] = (int) (((x & 0xFFFFFFFFL) >> 16) & 0xFF);
         y[2 + offset] = (int) (((x & 0xFFFFFFFFL) >> 8) & 0xFF);
@@ -53,22 +54,22 @@ public class SHA256 {
     }
 
     // Right rotate
-    long ror(long value, long bits) {
+    private long ror(long value, long bits) {
         return ((((value & 0xFFFFFFFFL) >> (bits & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 | (((value & 0xFFFFFFFFL) << ((32 - (bits & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long MIN(long x, long y) {
+    private long MIN(long x, long y) {
         return (x < y) ? x & 0xFFFFFFFFL : y & 0xFFFFFFFFL;
     }
 
-    long load32h(int[] y, int offset) {
+    private long load32h(int[] y, int offset) {
         return ((long) ((y)[0 + offset] & 255) << 24) | ((long) ((y)[1 + offset] & 255) << 16) |
                 ((long) ((y)[2 + offset] & 255) << 8) | ((long) ((y)[3 + offset] & 255));
 
     }
 
-    void store64h(long x, int[] y) {
+    private void store64h(long x, int[] y) {
         y[0 + 56] = (byte) (((x & 0xFFFFFFFFL) >> 56) & 0xFF);
         y[1 + 56] = (byte) (((x & 0xFFFFFFFFL) >> 48) & 0xFF);
         y[2 + 56] = (byte) (((x & 0xFFFFFFFFL) >> 40) & 0xFF);
@@ -80,48 +81,48 @@ public class SHA256 {
 
     }
 
-    long choose(long x, long y, long z) {
+    private long choose(long x, long y, long z) {
         return ((z & 0xFFFFFFFFL)
                 ^ (((x & 0xFFFFFFFFL) & (((y & 0xFFFFFFFFL) ^ (z & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL))
                 & 0xFFFFFFFFL;
     }
 
-    long majority(long x, long y, long z) {
+    private long majority(long x, long y, long z) {
         return ((((((x & 0xFFFFFFFFL) | (y & 0xFFFFFFFFL)) & 0xFFFFFFFFL) & (z & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 | (((x & 0xFFFFFFFFL) & (y & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long s(long x, long n) {
+    private long s(long x, long n) {
         return ror((x & 0xFFFFFFFFL), (n & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long r(long x, long n) {
+    private long r(long x, long n) {
         return (((x & 0xFFFFFFFFL) & 0xFFFFFFFFL) >> (n & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long sigma0(long x) {
+    private long sigma0(long x) {
         return (((s(x & 0xFFFFFFFFL, 2) & 0xFFFFFFFFL)
                 ^ (s(x & 0xFFFFFFFFL, 13) & 0xFFFFFFFFL) & 0xFFFFFFFFL)
                 ^ (s(x & 0xFFFFFFFFL, 22) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long sigma1(long x) {
+    private long sigma1(long x) {
         return ((((s(x & 0xFFFFFFFFL, 6) & 0xFFFFFFFFL) ^ (s(x & 0xFFFFFFFFL, 11) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 ^ (s(x & 0xFFFFFFFFL, 25) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long gamma0(long x) {
+    private long gamma0(long x) {
         return ((((s(x & 0xFFFFFFFFL, 7) & 0xFFFFFFFFL) ^ (s(x & 0xFFFFFFFFL, 18) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 ^ (r(x & 0xFFFFFFFFL, 3) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long gamma1(long x) {
+    private long gamma1(long x) {
         return ((((s(x & 0xFFFFFFFFL, 17) & 0xFFFFFFFFL)
                 ^ (s(x & 0xFFFFFFFFL, 19) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 ^ (r(x & 0xFFFFFFFFL, 10) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
     }
 
-    long[] sha256round(long[] S, int i, long[] W) {
+    private long[] sha256round(long[] S, int i, long[] W) {
         long t0 = ((((((((((S[7] & 0xFFFFFFFFL) + (sigma1(S[4] & 0xFFFFFFFFL) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 + (choose(S[4] & 0xFFFFFFFFL, S[5] & 0xFFFFFFFFL, S[6] & 0xFFFFFFFFL) & 0xFFFFFFFFL)) & 0xFFFFFFFFL)
                 + (K[i] & 0xFFFFFFFFL)) & 0xFFFFFFFFL) + (W[i] & 0xFFFFFFFFL)) & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
@@ -133,7 +134,7 @@ public class SHA256 {
         return S;
     }
 
-    void transformFunction(Sha256Context context, int[] buffer) {
+    private void transformFunction(Sha256Context context, int[] buffer) {
         long[] S = new long[8];
         long[] W = new long[64];
         long t;
@@ -177,7 +178,7 @@ public class SHA256 {
         }
     }
 
-    void sha256initialize(Sha256Context context) {
+    private void sha256initialize(Sha256Context context) {
         context.curlen = 0;
         context.length = 0;
         context.state[0] = 0x6A09E667L;
@@ -191,7 +192,7 @@ public class SHA256 {
 
     }
 
-    void sha256update(Sha256Context context, byte[] buf, long bufferSize) {
+    private void sha256update(Sha256Context context, byte[] buf, long bufferSize) {
         long n;
         int[] buffer = new int[buf.length];
         for (int i = 0; i < buf.length; i++) {
@@ -230,7 +231,7 @@ public class SHA256 {
         return newBuffer;
     }
 
-    void sha256finalise(Sha256Context context, SHA256_HASH digest) {
+    private void sha256finalise(Sha256Context context, SHA256_HASH digest) {
         if (context.curlen >= context.buf.length) {
             return;
         }

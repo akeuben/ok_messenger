@@ -1,29 +1,32 @@
 package org.ok.protocols.diffiehellman;
 
-import org.ok.protocols.Block;
+import org.whispersystems.curve25519.Curve25519;
+import org.whispersystems.curve25519.Curve25519KeyPair;
 
 import javax.crypto.KeyAgreement;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
+import java.security.spec.NamedParameterSpec;
 
 public class DiffieHellman {
+    public static KeyPair GenerateKeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("XDH");
+        NamedParameterSpec spec = new NamedParameterSpec("X25519");
+        kpg.initialize(spec);
+        return kpg.generateKeyPair();
+    }
 
-    private static final KeyAgreement ka;
-
-    static {
+    public static byte[] Run(KeyPair kp, PublicKey pubKey) {
         try {
-            ka = KeyAgreement.getInstance("XDH");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            KeyAgreement ka = KeyAgreement.getInstance("XDH");
+            ka.init(kp.getPrivate());
+            ka.doPhase(pubKey, true);
+            return ka.generateSecret();
+        } catch (Exception e) {
+            throw new RuntimeException("uh oh");
         }
     }
 
-    public static Block EstablishSharedSecret(DHKeyPair dh_pair, PublicKey dh_pub) throws InvalidKeyException {
-        ka.init(dh_pair.privateKey);
-        ka.doPhase(dh_pub, true);
-        byte[] secret = ka.generateSecret();
-
-        return new Block(secret.length, secret);
+    public static byte[] Run(byte[] privateKey, byte[] publicKey) {
+        return Curve25519.getInstance(Curve25519.BEST).calculateAgreement(publicKey, privateKey);
     }
 }

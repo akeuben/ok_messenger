@@ -8,7 +8,7 @@ package org.ok.protocols.hmacsha256;
 
 import org.ok.protocols.Block;
 
-class SHA256 {
+public class SHA256 {
 
     private class Sha256Context {
         long length;
@@ -271,7 +271,7 @@ class SHA256 {
         }
     }
 
-    Block sha256(Block data) {
+    public Block sha256(Block data) {
         Sha256Context ctx = new Sha256Context();
         SHA256_HASH hash = new SHA256_HASH(SHA256_HASH_SIZE);
 

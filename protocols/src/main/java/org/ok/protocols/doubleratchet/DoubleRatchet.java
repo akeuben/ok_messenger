@@ -42,8 +42,7 @@ public class DoubleRatchet {
             throw new RuntimeException(e);
         }
         DHr = otherPublicKey;
-        byte[] dhRun = DiffieHellman.Run(DHs, DHr);
-        Block[] val = kdf.kdf_rk(SK, new Block(dhRun.length, dhRun));
+        Block[] val = kdf.kdf_rk(SK, new Block(DiffieHellman.Run(DHs, DHr)));
         RK = val[0];
         CKs = val[1];
         CKr = null;
@@ -104,8 +103,7 @@ public class DoubleRatchet {
         Nr = 0;
         DHr = header.pubKey;
 
-        byte[] dhRun = DiffieHellman.Run(DHs, DHr);
-        Block[] res = kdf.kdf_rk(RK, new Block(dhRun.length, dhRun));
+        Block[] res = kdf.kdf_rk(RK, new Block(DiffieHellman.Run(DHs, DHr)));
         RK = res[0];
         CKr = res[1];
         try {
@@ -113,8 +111,7 @@ public class DoubleRatchet {
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
-        dhRun = DiffieHellman.Run(DHs, DHr);
-        res = kdf.kdf_rk(RK, new Block(dhRun.length, dhRun));
+        res = kdf.kdf_rk(RK, new Block(DiffieHellman.Run(DHs, DHr)));
         RK = res[0];
         CKs = res[1];
     }

@@ -1,8 +1,8 @@
 package org.ok.protocols.aes;
 
 import org.ok.protocols.Block;
-import org.ok.protocols.HKDF;
-import org.ok.protocols.HMAC;
+import org.ok.protocols.kdf.HKDF;
+import org.ok.protocols.hmacsha256.HMAC;
 
 public class AEAD {
     private AES256CBC aes;
@@ -16,7 +16,7 @@ public class AEAD {
     }
 
     public Block encrypt(Block data, AESKey key, Block associated_data) {
-        Block hkdfMaterial = new Block(hkdf.hkdf(new byte[256/8], key.getData(), new byte[] {0x73}, 80));
+        Block hkdfMaterial = hkdf.hkdf(new Block(new byte[256/8]), key, new Block(new byte[] {0x73}), 80);
         AESKey encKey = new AESKey(hkdfMaterial.subData(0, 32).getData());
         Block authKey = hkdfMaterial.subData(32, 64);
         Block iv = hkdfMaterial.subData(64, 80);
@@ -29,7 +29,7 @@ public class AEAD {
     }
 
     public Block decrypt(Block data, AESKey key, Block associated_data) {
-        Block hkdfMaterial = new Block(hkdf.hkdf(new byte[256/8], key.getData(), new byte[] {0x73}, 80));
+        Block hkdfMaterial = hkdf.hkdf(new Block(new byte[256/8]), key, new Block(new byte[] {0x73}), 80);
         AESKey encKey = new AESKey(hkdfMaterial.subData(0, 32).getData());
         Block authKey = hkdfMaterial.subData(32, 64);
         Block iv = hkdfMaterial.subData(64, 80);

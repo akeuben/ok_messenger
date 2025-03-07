@@ -1,4 +1,4 @@
-package org.ok.app;
+package org.ok.server;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -11,6 +11,7 @@ public class Server extends WebSocketServer {
     public Server(int port) {
         super(new InetSocketAddress(port));
     }
+
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         System.out.println("Server has received connection: " + webSocket.getRemoteSocketAddress());

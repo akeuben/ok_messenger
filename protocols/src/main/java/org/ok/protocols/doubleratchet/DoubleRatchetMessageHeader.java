@@ -25,4 +25,16 @@ public class DoubleRatchetMessageHeader {
 
         return Block.concat(associatedDataLength, associatedData, pubKeyBlock, pnBlock, nBlock);
     }
+
+    public PublicKey getPubKey() {
+        return pubKey;
+    }
+
+    public long getPn() {
+        return pn;
+    }
+
+    public long getN() {
+        return n;
+    }
 }

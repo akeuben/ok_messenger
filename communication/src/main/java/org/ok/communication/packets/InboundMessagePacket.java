@@ -8,27 +8,30 @@ import java.nio.ByteBuffer;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
-public class OutboundMessagePacket extends Packet {
+public class InboundMessagePacket extends Packet {
+    public final String destination;
     public final Block data;
     public final PublicKey pubKey;
     public final long pn;
     public final long n;
 
 
-    public OutboundMessagePacket(DoubleRatchetMessage message) {
-        super((byte) 0x01, (byte) 0x04);
+    public InboundMessagePacket(String destination, DoubleRatchetMessage message) {
+        super((byte) 0x01, (byte) 0x14);
 
+        this.destination = destination;
         data = message.getData();
         pubKey = message.getHeader().getPubKey();
         pn = message.getHeader().getPn();
         n = message.getHeader().getN();
     }
 
-    public OutboundMessagePacket(byte[] rawPacket) {
-        super((byte) 0x01, (byte) 0x04);
+    public InboundMessagePacket(byte[] rawPacket) {
+        super((byte) 0x01, (byte) 0x14);
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
 
+        this.destination = deserializeString(buffer);
         this.data = deserializeBlock(buffer);
         this.pubKey = (PublicKey) deserializeKey(buffer, "XDH", X509EncodedKeySpec.class);
         this.pn = buffer.getLong();
@@ -38,18 +41,21 @@ public class OutboundMessagePacket extends Packet {
     @Override
     protected byte[] serializeData() {
 
+        byte[] destination = serializeString(this.destination);
         byte[] data = serializeBlock(this.data);
-
         byte[] pubKey = this.serializeKey(this.pubKey);
 
-        return ByteBuffer.allocate(data.length +
+        return ByteBuffer.allocate(destination.length +
+                        data.length +
                         pubKey.length +
                         Long.BYTES +
                         Long.BYTES)
+                .put(destination)
                 .put(data)
                 .put(pubKey)
                 .putLong(pn)
                 .putLong(n)
                 .array();
     }
+
 }

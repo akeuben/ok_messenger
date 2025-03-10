@@ -2,15 +2,15 @@ package org.ok.communication.packets;
 
 import org.ok.communication.Packet;
 import org.ok.protocols.Block;
-import org.ok.protocols.diffiehellman.DiffieHellman;
 import org.ok.protocols.x3dh.X3DHMessage;
 
 import java.nio.ByteBuffer;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
-public class OutboundInitialMessagePacket extends Packet {
+public class InboundInitialMessagePacket extends Packet {
 
+    public final String destination;
     public final Block identityKey;
     public final Block emphemeralKey;
     public final long prekeyID;
@@ -20,9 +20,10 @@ public class OutboundInitialMessagePacket extends Packet {
     public final long n;
 
 
-    public OutboundInitialMessagePacket(X3DHMessage message) {
-        super((byte) 0x01, (byte) 0x03);
+    public InboundInitialMessagePacket(String destination, X3DHMessage message) {
+        super((byte) 0x01, (byte) 0x13);
 
+        this.destination = destination;
         identityKey = message.getIdentityKey();
         emphemeralKey = message.getEmphemeralKey();
         prekeyID = message.getPrekeyID();
@@ -32,11 +33,12 @@ public class OutboundInitialMessagePacket extends Packet {
         n = message.getMessage().getHeader().getN();
     }
 
-    public OutboundInitialMessagePacket(byte[] rawPacket) {
-        super((byte) 0x01, (byte) 0x03);
+    public InboundInitialMessagePacket(byte[] rawPacket) {
+        super((byte) 0x01, (byte) 0x13);
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
 
+        destination = deserializeString(buffer);
         identityKey = deserializeBlock(buffer);
         emphemeralKey = deserializeBlock(buffer);
         prekeyID = buffer.getLong();
@@ -48,12 +50,14 @@ public class OutboundInitialMessagePacket extends Packet {
 
     @Override
     protected byte[] serializeData() {
+        byte[] destination = serializeString(this.destination);
         byte[] identityKey = serializeBlock(this.identityKey);
         byte[] emphemeralKey = serializeBlock(this.emphemeralKey);
         byte[] data = serializeBlock(this.data);
         byte[] pubKey = serializeKey(this.pubKey);
 
-        return ByteBuffer.allocate(identityKey.length + emphemeralKey.length + Long.BYTES + data.length + pubKey.length + Long.BYTES + Long.BYTES)
+        return ByteBuffer.allocate(destination.length + identityKey.length + emphemeralKey.length + Long.BYTES + data.length + pubKey.length + Long.BYTES + Long.BYTES)
+                .put(destination)
                 .put(identityKey)
                 .put(emphemeralKey)
                 .putLong(prekeyID)

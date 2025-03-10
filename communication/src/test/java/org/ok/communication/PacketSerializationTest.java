@@ -1,9 +1,7 @@
 package org.ok.communication;
 
 import org.junit.jupiter.api.Test;
-import org.ok.communication.packets.OutboundInitialMessagePacket;
-import org.ok.communication.packets.InboundLoginPacket;
-import org.ok.communication.packets.OutboundMessagePacket;
+import org.ok.communication.packets.*;
 import org.ok.protocols.Block;
 import org.ok.protocols.diffiehellman.DiffieHellman;
 import org.ok.protocols.doubleratchet.DoubleRatchet;
@@ -113,6 +111,42 @@ public class PacketSerializationTest {
     }
 
     @Test
+    public void TestInboundInitialMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        PacketManager.register((byte) 0x13, InboundInitialMessagePacket.class);
+
+        Curve25519KeyPair aliceKeys = curve.generateKeyPair();
+        Curve25519KeyPair bobKeys = curve.generateKeyPair();
+
+        Curve25519KeyPair bobSignedPrekey = curve.generateKeyPair();
+        Curve25519KeyPair bobOneTimePrekey = curve.generateKeyPair();
+
+        PrekeyBundle bobPrekeyBundle = X3DH.createPrekeyBundle(bobKeys, bobSignedPrekey, bobOneTimePrekey);
+
+        X3DHResult aliceResult = X3DH.runSend(bobPrekeyBundle, aliceKeys);
+
+        KeyPair bobKeyPair = DiffieHellman.GenerateKeyPair();
+
+        DoubleRatchet alice = new DoubleRatchet(aliceResult.getSK(), bobKeyPair.getPublic());
+
+        DoubleRatchetMessage encyrpted = alice.encrypt(new Block("Hello, World!"), aliceResult.getAD());
+
+        X3DHMessage message = new X3DHMessage(new Block(aliceKeys.getPublicKey()), aliceResult.getEphemeralKey(), 0, encyrpted);
+
+        InboundInitialMessagePacket packet = new InboundInitialMessagePacket("avery", message);
+
+        InboundInitialMessagePacket decoded = encodeDecode(packet);
+
+        assertEquals(packet.destination, decoded.destination);
+        assertEquals(packet.identityKey, decoded.identityKey);
+        assertEquals(packet.emphemeralKey, decoded.emphemeralKey);
+        assertEquals(packet.prekeyID, decoded.prekeyID);
+        assertEquals(packet.data, decoded.data);
+        assertEquals(packet.pubKey, decoded.pubKey);
+        assertEquals(packet.pn, decoded.pn);
+        assertEquals(packet.n, decoded.n);
+    }
+
+    @Test
     public void TestOutboundMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         PacketManager.register((byte) 0x04, OutboundMessagePacket.class);
 
@@ -133,6 +167,49 @@ public class PacketSerializationTest {
         assertEquals(packet.pubKey, decoded.pubKey);
         assertEquals(packet.pn, decoded.pn);
         assertEquals(packet.n, decoded.n);
+    }
+
+    @Test
+    public void TestInboundMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        PacketManager.register((byte) 0x14, InboundMessagePacket.class);
+
+        Block SK = Block.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
+        KeyPair bobKeyPair = DiffieHellman.GenerateKeyPair();
+
+        DoubleRatchet alice = new DoubleRatchet(SK, bobKeyPair.getPublic());
+
+        Block AD = Block.fromHexString("44116f1a6af9c79c123B8A12");
+
+        DoubleRatchetMessage message = alice.encrypt(new Block("Hello, World!"), AD);
+
+        InboundMessagePacket packet = new InboundMessagePacket("avery", message);
+
+        InboundMessagePacket decoded = encodeDecode(packet);
+
+        assertEquals(packet.destination, decoded.destination);
+        assertEquals(packet.data, decoded.data);
+        assertEquals(packet.pubKey, decoded.pubKey);
+        assertEquals(packet.pn, decoded.pn);
+        assertEquals(packet.n, decoded.n);
+    }
+
+    @Test
+    public void TestOutboundLoginResponsePacket() {
+        PacketManager.register((byte) 0x12, OutboundLoginResponsePacket.class);
+        OutboundLoginResponsePacket packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_PASSWORD);
+        OutboundLoginResponsePacket decoded = encodeDecode(packet);
+
+        assertEquals(packet.response, decoded.response);
+
+        packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER);
+        decoded = encodeDecode(packet);
+
+        assertEquals(packet.response, decoded.response);
+
+        packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.SUCCESS);
+        decoded = encodeDecode(packet);
+
+        assertEquals(packet.response, decoded.response);
     }
 
 }

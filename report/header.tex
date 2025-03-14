@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{amssymb, amstext, amsthm, amscd, amsmath,color, mathabx}
+\usepackage{cite}
+\RequirePackage{doi}
+\usepackage{hyperref}
+
+%for multiline comments \begin{comment}
+\usepackage{comment}
+
+
+%for fancy enums
+\usepackage{enumerate}
+
+% images
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+%margins
+\setlength{\oddsidemargin}{.3in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{.1in}
+\setlength{\textheight}{8.0in} 
+
+
+
+% greek laziness
+\newcommand{\ep}{\varepsilon}
+\newcommand{\vp}{\varphi}
+\newcommand{\emp}{\emptyset}
+
+%some basic laziness i tend to use
+\newcommand{\N}{{\mathbb N}}
+\newcommand{\Q}{{\mathbb Q}}
+\newcommand{\R}{{\mathbb R}}
+\newcommand{\Z}{{\mathbb Z}}
+\newcommand{\C}{{\mathbb C}}
+\newcommand{\ord}{{\mathrm{ord}}}
+\newcommand{\im}{{\mathrm{im}}}
+\newcommand{\id}{{\mathrm{id}}}
+
+
+%     normal style theorems,
+%\numberwithin{equation}{section} %%%%%%number within section
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+ \newtheorem*{theoremA}{Theorem A}
+  \newtheorem*{theoremB}{Theorem B}

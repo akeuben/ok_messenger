@@ -5,3 +5,8 @@
 build
 
 .idea/
+
+*.pdf
+*.log
+*.aux
+*.out

@@ -1,0 +1,68 @@
+\input{header.tex}
+
+\title{Secure Messaging with Double Ratchet\\ A requirement for the Signal Protocol}
+\author{Avery Keuben (CPSC)\\ Joshua Liu (CPSC)\\ Aritra DE (MATH)}
+\date{\today}
+  
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\section{Overview}
+\input{overview.tex}
+
+\section{AES-256}
+\input{./AES-256/main.tex}
+
+\subsection{Implementation}
+\input{./AES-256/implementation.tex}
+
+\subsection{Mode Of Operation}
+\input{./AES-256/mode.tex}
+
+\subsection{AEAD}
+\input{./AES-256/aead.tex}
+
+\section{SHA-256}
+\input{./SHA-256/main.tex}
+
+\subsection{Implementation}
+\input{./SHA-256/implementation.tex}
+
+\subsection{HMAC SHA-256}
+\input{./SHA-256/HMAC/main.tex}
+
+\subsubsection{Use as a KDF}
+\input{./SHA-256/HMAC/kdf.tex}
+
+\subsection{HKDF}
+\input{./SHA-256/hkdf.tex}
+
+\section{Double Ratchet}
+\input{./DoubleRatchet/main.tex}
+
+\subsection{Implementation}
+\input{./DoubleRatchet/implementation.tex}
+
+\subsection{Effectiveness}
+\input{./DoubleRatchet/effectiveness/main.tex}
+
+\subsubsection{Forward Secrecy}
+\input{./DoubleRatchet/effectiveness/forward-secrecy.tex}
+
+\subsubsection{Break-in Recovery}
+\input{./DoubleRatchet/effectiveness/break-in-recovery.tex}
+
+\section{X3DH - Triple-extended Diffie-Hellman}
+\input{./X3DH/main.tex}
+
+\subsection{Implementation}
+\input{./X3DH/implementation.tex}
+
+\subsection{Effectiveness}
+\input{./X3DH/effectiveness.tex}
+
+\end{document}
+

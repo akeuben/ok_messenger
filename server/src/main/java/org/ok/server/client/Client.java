@@ -7,12 +7,16 @@ import org.ok.protocols.hmacsha256.SHA256;
 import org.ok.server.user.User;
 import org.ok.server.user.UserManager;
 
-public abstract class Client {
+public class Client {
     private static SHA256 sha = new SHA256();
     private ClientState state;
     private User user;
 
     private WebSocket connection;
+
+    public Client(WebSocket connection) {
+        this.connection = connection;
+    }
 
     public void connect(WebSocket connection) {
         if(this.state != ClientState.DISCONNECTED) {

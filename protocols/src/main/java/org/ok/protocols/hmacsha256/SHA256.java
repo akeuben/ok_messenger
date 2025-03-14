@@ -247,7 +247,7 @@ public class SHA256 {
         // encoding like normal.
         if (context.curlen > 56) {
             while (context.curlen < 64) {
-                context.buf[(int) context.curlen++] = 0 & 0xFF;
+                context.buf[(int) context.curlen++] = 0;
             }
             transformFunction(context, context.buf);
             context.curlen = 0;

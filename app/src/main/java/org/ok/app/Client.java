@@ -2,8 +2,10 @@ package org.ok.app;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.ok.communication.PacketManager;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class Client extends WebSocketClient {
@@ -22,6 +24,11 @@ public class Client extends WebSocketClient {
     @Override
     public void onMessage(String s) {
         receiveQueue.addMessage(s);
+    }
+
+    @Override
+    public void onMessage(ByteBuffer bytes) {
+        PacketManager.getInstance().handle(bytes.array(), null, this);
     }
 
     @Override

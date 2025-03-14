@@ -5,7 +5,7 @@ import org.ok.protocols.Block;
 import java.nio.ByteBuffer;
 
 public class AES256CTR {
-    private AES256 aes;
+    private final AES256 aes;
 
     public AES256CTR() {
         aes = new AES256();

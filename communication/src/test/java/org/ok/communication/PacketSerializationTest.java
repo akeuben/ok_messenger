@@ -47,25 +47,25 @@ public class PacketSerializationTest {
     private static <T extends Packet> T encodeDecode(T packet) {
         byte[] encoded = packet.serialize();
         //noinspection unchecked
-        return (T) PacketManager.deserialize(encoded);
+        return (T) PacketManager.getInstance().deserialize(encoded);
     }
 
     @Test
     public void TestTestPacket() {
-        PacketManager.register((byte) 0x01, TestPacket.class);
+        PacketManager.getInstance().register((byte) 0x01, TestPacket.class);
 
         TestPacket packet = new TestPacket("Hello, World!");
 
         byte[] encoded = packet.serialize();
 
-        TestPacket decoded = (TestPacket) PacketManager.deserialize(encoded);
+        TestPacket decoded = (TestPacket) PacketManager.getInstance().deserialize(encoded);
 
         assertEquals(packet.message, decoded.message);
     }
 
     @Test
     public void TestInboundLoginPacket() {
-        PacketManager.register((byte) 0x02, InboundLoginPacket.class);
+        PacketManager.getInstance().register((byte) 0x02, InboundLoginPacket.class);
 
         InboundLoginPacket packet = new InboundLoginPacket("avery", "avery_password");
 
@@ -77,7 +77,7 @@ public class PacketSerializationTest {
 
     @Test
     public void TestOutboundInitialMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PacketManager.register((byte) 0x03, OutboundInitialMessagePacket.class);
+        PacketManager.getInstance().register((byte) 0x03, OutboundInitialMessagePacket.class);
 
         Curve25519KeyPair aliceKeys = curve.generateKeyPair();
         Curve25519KeyPair bobKeys = curve.generateKeyPair();
@@ -97,10 +97,11 @@ public class PacketSerializationTest {
 
         X3DHMessage message = new X3DHMessage(new Block(aliceKeys.getPublicKey()), aliceResult.getEphemeralKey(), 0, encyrpted);
 
-        OutboundInitialMessagePacket packet = new OutboundInitialMessagePacket(message);
+        OutboundInitialMessagePacket packet = new OutboundInitialMessagePacket("avery", message);
 
         OutboundInitialMessagePacket decoded = encodeDecode(packet);
 
+        assertEquals(packet.origin, decoded.origin);
         assertEquals(packet.identityKey, decoded.identityKey);
         assertEquals(packet.emphemeralKey, decoded.emphemeralKey);
         assertEquals(packet.prekeyID, decoded.prekeyID);
@@ -112,7 +113,7 @@ public class PacketSerializationTest {
 
     @Test
     public void TestInboundInitialMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PacketManager.register((byte) 0x13, InboundInitialMessagePacket.class);
+        PacketManager.getInstance().register((byte) 0x13, InboundInitialMessagePacket.class);
 
         Curve25519KeyPair aliceKeys = curve.generateKeyPair();
         Curve25519KeyPair bobKeys = curve.generateKeyPair();
@@ -148,7 +149,7 @@ public class PacketSerializationTest {
 
     @Test
     public void TestOutboundMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PacketManager.register((byte) 0x04, OutboundMessagePacket.class);
+        PacketManager.getInstance().register((byte) 0x04, OutboundMessagePacket.class);
 
         Block SK = Block.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
         KeyPair bobKeyPair = DiffieHellman.GenerateKeyPair();
@@ -159,10 +160,11 @@ public class PacketSerializationTest {
 
         DoubleRatchetMessage message = alice.encrypt(new Block("Hello, World!"), AD);
 
-        OutboundMessagePacket packet = new OutboundMessagePacket(message);
+        OutboundMessagePacket packet = new OutboundMessagePacket("avery", message);
 
         OutboundMessagePacket decoded = encodeDecode(packet);
 
+        assertEquals(packet.origin, decoded.origin);
         assertEquals(packet.data, decoded.data);
         assertEquals(packet.pubKey, decoded.pubKey);
         assertEquals(packet.pn, decoded.pn);
@@ -171,7 +173,7 @@ public class PacketSerializationTest {
 
     @Test
     public void TestInboundMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        PacketManager.register((byte) 0x14, InboundMessagePacket.class);
+        PacketManager.getInstance().register((byte) 0x14, InboundMessagePacket.class);
 
         Block SK = Block.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
         KeyPair bobKeyPair = DiffieHellman.GenerateKeyPair();
@@ -195,7 +197,7 @@ public class PacketSerializationTest {
 
     @Test
     public void TestOutboundLoginResponsePacket() {
-        PacketManager.register((byte) 0x12, OutboundLoginResponsePacket.class);
+        PacketManager.getInstance().register((byte) 0x12, OutboundLoginResponsePacket.class);
         OutboundLoginResponsePacket packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_PASSWORD);
         OutboundLoginResponsePacket decoded = encodeDecode(packet);
 

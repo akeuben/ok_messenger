@@ -11,6 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class OutboundInitialMessagePacket extends Packet {
 
+    public final String origin;
     public final Block identityKey;
     public final Block emphemeralKey;
     public final long prekeyID;
@@ -20,9 +21,10 @@ public class OutboundInitialMessagePacket extends Packet {
     public final long n;
 
 
-    public OutboundInitialMessagePacket(X3DHMessage message) {
+    public OutboundInitialMessagePacket(String origin, X3DHMessage message) {
         super((byte) 0x01, (byte) 0x03);
 
+        this.origin = origin;
         identityKey = message.getIdentityKey();
         emphemeralKey = message.getEmphemeralKey();
         prekeyID = message.getPrekeyID();
@@ -37,6 +39,7 @@ public class OutboundInitialMessagePacket extends Packet {
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
 
+        origin = deserializeString(buffer);
         identityKey = deserializeBlock(buffer);
         emphemeralKey = deserializeBlock(buffer);
         prekeyID = buffer.getLong();
@@ -48,12 +51,14 @@ public class OutboundInitialMessagePacket extends Packet {
 
     @Override
     protected byte[] serializeData() {
+        byte[] origin = serializeString(this.origin);
         byte[] identityKey = serializeBlock(this.identityKey);
         byte[] emphemeralKey = serializeBlock(this.emphemeralKey);
         byte[] data = serializeBlock(this.data);
         byte[] pubKey = serializeKey(this.pubKey);
 
-        return ByteBuffer.allocate(identityKey.length + emphemeralKey.length + Long.BYTES + data.length + pubKey.length + Long.BYTES + Long.BYTES)
+        return ByteBuffer.allocate(origin.length + identityKey.length + emphemeralKey.length + Long.BYTES + data.length + pubKey.length + Long.BYTES + Long.BYTES)
+                .put(origin)
                 .put(identityKey)
                 .put(emphemeralKey)
                 .putLong(prekeyID)

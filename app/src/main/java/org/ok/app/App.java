@@ -3,17 +3,36 @@
  */
 package org.ok.app;
 
+import org.ok.app.ui.Login;
 import org.ok.app.ui.Window;
+import org.ok.communication.PacketManager;
+import org.ok.communication.packets.InboundLoginPacket;
+import org.ok.communication.packets.OutboundLoginResponsePacket;
 import org.ok.protocols.caesar.CaesarCipher;
 
 import java.net.URI;
+import java.net.http.WebSocket;
 import java.util.Scanner;
 
 public class App {
+    public static Client client;
+
     public static void main(String[] args) {
-        Client client = new Client(URI.create("ws://127.0.0.1:1234"));
+        PacketManager<Void, Client> manager = PacketManager.getInstance();
+        manager.register((byte) 0x02, InboundLoginPacket.class);
+        manager.register((byte) 0x12, OutboundLoginResponsePacket.class);
+
+        manager.addHandler(OutboundLoginResponsePacket.class, (p, s, r) -> {
+            switch(p.response) {
+                case INVALID_PASSWORD -> System.out.println("Invalid Password");
+                case INVALID_USER -> System.out.println("Invalid Username");
+                case SUCCESS -> System.out.println("Success!");
+            }
+        });
+
+        client = new Client(URI.create("ws://127.0.0.1:1234"));
         client.connect();
 
-        Window window = new Window(client);
+        new Login();
     }
 }

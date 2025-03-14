@@ -9,15 +9,17 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
 public class OutboundMessagePacket extends Packet {
+    public final String origin;
     public final Block data;
     public final PublicKey pubKey;
     public final long pn;
     public final long n;
 
 
-    public OutboundMessagePacket(DoubleRatchetMessage message) {
+    public OutboundMessagePacket(String origin, DoubleRatchetMessage message) {
         super((byte) 0x01, (byte) 0x04);
 
+        this.origin = origin;
         data = message.getData();
         pubKey = message.getHeader().getPubKey();
         pn = message.getHeader().getPn();
@@ -29,6 +31,7 @@ public class OutboundMessagePacket extends Packet {
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
 
+        this.origin = deserializeString(buffer);
         this.data = deserializeBlock(buffer);
         this.pubKey = (PublicKey) deserializeKey(buffer, "XDH", X509EncodedKeySpec.class);
         this.pn = buffer.getLong();
@@ -38,14 +41,16 @@ public class OutboundMessagePacket extends Packet {
     @Override
     protected byte[] serializeData() {
 
+        byte[] origin = serializeString(this.origin);
         byte[] data = serializeBlock(this.data);
-
         byte[] pubKey = this.serializeKey(this.pubKey);
 
-        return ByteBuffer.allocate(data.length +
+        return ByteBuffer.allocate(origin.length +
+                        data.length +
                         pubKey.length +
                         Long.BYTES +
                         Long.BYTES)
+                .put(origin)
                 .put(data)
                 .put(pubKey)
                 .putLong(pn)

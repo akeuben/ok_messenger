@@ -15,8 +15,8 @@ public class Client {
 
     private WebSocket connection;
 
-    public Client(WebSocket connection) {
-        this.connection = connection;
+    public Client() {
+        this.state = ClientState.DISCONNECTED;
     }
 
     public void connect(WebSocket connection) {
@@ -43,7 +43,7 @@ public class Client {
             return OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER;
         }
 
-        if(this.user.checkPassword(password)) {
+        if(!this.user.checkPassword(password)) {
             return OutboundLoginResponsePacket.LoginResponseValue.INVALID_PASSWORD;
         }
 

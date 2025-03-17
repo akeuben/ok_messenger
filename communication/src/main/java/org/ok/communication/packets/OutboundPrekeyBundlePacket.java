@@ -9,13 +9,17 @@ import java.nio.ByteBuffer;
 public class OutboundPrekeyBundlePacket extends Packet {
     public PrekeyBundle bundle;
 
-    public OutboundPrekeyBundlePacket(PrekeyBundle bundle) {
+    public OutboundPrekeyBundlePacket() {
         super((byte)0x01, (byte) 0x06);
+    }
+
+    public OutboundPrekeyBundlePacket(PrekeyBundle bundle) {
+        this();
         this.bundle = bundle;
     }
 
     public OutboundPrekeyBundlePacket(byte[] data) {
-        super((byte)0x01, (byte) 0x06);
+        this();
         ByteBuffer buffer = ByteBuffer.wrap(data);
 
         Block identityKey = deserializeBlock(buffer);

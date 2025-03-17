@@ -8,14 +8,18 @@ public class InboundRequestPrekeyBundlePacket extends Packet {
 
     public String user;
 
-    public InboundRequestPrekeyBundlePacket(String user) {
+    public InboundRequestPrekeyBundlePacket() {
         super((byte) 0x01, (byte) 0x16);
+    }
+
+    public InboundRequestPrekeyBundlePacket(String user) {
+        this();
 
         this.user = user;
     }
 
     public InboundRequestPrekeyBundlePacket(byte[] data) {
-        super((byte) 0x01, (byte) 0x16);
+        this();
         ByteBuffer buffer = ByteBuffer.wrap(data);
 
         this.user = deserializeString(buffer);

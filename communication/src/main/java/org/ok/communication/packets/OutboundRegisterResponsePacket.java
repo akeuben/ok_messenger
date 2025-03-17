@@ -7,13 +7,17 @@ import java.nio.ByteBuffer;
 public class OutboundRegisterResponsePacket extends Packet {
     public boolean success;
 
-    public OutboundRegisterResponsePacket(boolean success) {
+    public OutboundRegisterResponsePacket() {
         super((byte) 0x01, (byte) 0x18);
+    }
+
+    public OutboundRegisterResponsePacket(boolean success) {
+        this();
         this.success = success;
     }
 
     public OutboundRegisterResponsePacket(byte[] data) {
-        super((byte) 0x01, (byte) 0x18);
+        this();
         ByteBuffer buffer = ByteBuffer.wrap(data);
         this.success = buffer.get() == 1;
     }

@@ -12,14 +12,18 @@ import java.util.List;
 public class InboundUpdatePrekeysPacket extends Packet {
     public List<Block> prekeyBundles = new ArrayList<>();
 
-    public InboundUpdatePrekeysPacket(Block[] bundles) {
+    public InboundUpdatePrekeysPacket() {
         super((byte) 0x01, (byte) 0x15);
+    }
+
+    public InboundUpdatePrekeysPacket(Block[] bundles) {
+        this();
 
         prekeyBundles.addAll(Arrays.asList(bundles));
     }
 
     public InboundUpdatePrekeysPacket(byte[] data) {
-        super((byte) 0x01, (byte) 0x15);
+        this();
 
         ByteBuffer buffer = ByteBuffer.wrap(data);
         int count = buffer.getInt();

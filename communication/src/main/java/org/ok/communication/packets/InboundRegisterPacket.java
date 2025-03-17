@@ -8,15 +8,18 @@ public class InboundRegisterPacket extends Packet {
     public String username;
     public String password;
 
-    public Inbound
+    public InboundRegisterPacket() {
+        super((byte) 0x01, (byte) 0x17);
+    }
 
     public InboundRegisterPacket(String username, String password) {
+        this();
         this.username = username;
         this.password = password;
     }
 
     public InboundRegisterPacket(byte[] data) {
-        super((byte) 0x01, (byte) 0x17);
+        this();
         ByteBuffer buffer = ByteBuffer.wrap(data);
         this.username = deserializeString(buffer);
         this.password = deserializeString(buffer);

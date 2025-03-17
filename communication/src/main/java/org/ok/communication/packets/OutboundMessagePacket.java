@@ -9,15 +9,18 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 
 public class OutboundMessagePacket extends Packet {
-    public final String origin;
-    public final Block data;
-    public final PublicKey pubKey;
-    public final long pn;
-    public final long n;
+    public String origin;
+    public Block data;
+    public PublicKey pubKey;
+    public long pn;
+    public long n;
 
+    public OutboundMessagePacket() {
+        super((byte) 0x01, (byte) 0x04);
+    }
 
     public OutboundMessagePacket(String origin, DoubleRatchetMessage message) {
-        super((byte) 0x01, (byte) 0x04);
+        this();
 
         this.origin = origin;
         data = message.getData();
@@ -27,7 +30,7 @@ public class OutboundMessagePacket extends Packet {
     }
 
     public OutboundMessagePacket(byte[] rawPacket) {
-        super((byte) 0x01, (byte) 0x04);
+        this();
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
 

@@ -17,8 +17,13 @@ public class PacketManager<S,R> {
         registeredPacketClasses.put(identifier, packetClass);
     }
 
-    public void register(Class<? extends Packet> packetClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Packet packet = packetClass.getConstructor(byte[].class).newInstance((Object) new byte[0]);
+    public void register(Class<? extends Packet> packetClass) {
+        try {
+            Packet packet = packetClass.getConstructor().newInstance();
+            register(packet.getIdentifier(), packetClass);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

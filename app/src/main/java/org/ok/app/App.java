@@ -3,36 +3,63 @@
  */
 package org.ok.app;
 
+import org.ok.app.ui.CoreApp;
 import org.ok.app.ui.Login;
-import org.ok.app.ui.Window;
 import org.ok.communication.PacketManager;
-import org.ok.communication.packets.InboundLoginPacket;
-import org.ok.communication.packets.OutboundLoginResponsePacket;
-import org.ok.protocols.caesar.CaesarCipher;
+import org.ok.communication.packets.*;
 
+import javax.swing.*;
 import java.net.URI;
-import java.net.http.WebSocket;
-import java.util.Scanner;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class App {
     public static Client client;
 
     public static void main(String[] args) {
+        AtomicReference<JFrame> currentWindow = new AtomicReference<>(new Login());
+
         PacketManager<Void, Client> manager = PacketManager.getInstance();
-        manager.register((byte) 0x02, InboundLoginPacket.class);
-        manager.register((byte) 0x12, OutboundLoginResponsePacket.class);
+        manager.register(InboundLoginPacket.class);
+        manager.register(OutboundLoginResponsePacket.class);
+        manager.register(InboundInitialMessagePacket.class);
+        manager.register(InboundLoginPacket.class);
+        manager.register(InboundMessagePacket.class);
+        manager.register(InboundRegisterPacket.class);
+        manager.register(InboundRequestPrekeyBundlePacket.class);
+        manager.register(InboundUpdatePrekeysPacket.class);
+        manager.register(OutboundInitialMessagePacket.class);
+        manager.register(OutboundLoginResponsePacket.class);
+        manager.register(OutboundMessagePacket.class);
+        manager.register(OutboundPrekeyBundlePacket.class);
+        manager.register(OutboundRegisterResponsePacket.class);
+        manager.register(OutboundRequestPrekeysPacket.class);
 
         manager.addHandler(OutboundLoginResponsePacket.class, (p, s, r) -> {
             switch(p.response) {
                 case INVALID_PASSWORD -> System.out.println("Invalid Password");
                 case INVALID_USER -> System.out.println("Invalid Username");
-                case SUCCESS -> System.out.println("Success!");
+                case SUCCESS -> {
+                    currentWindow.get().setVisible(false);
+                    currentWindow.get().dispose();
+                    try {
+                        currentWindow.set(new CoreApp());
+                    } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         });
 
+        manager.addHandler(OutboundRegisterResponsePacket.class, (p, s, r) -> {
+            if(p.success) {
+                System.out.println("Successfully registered!");
+            } else {
+                System.out.println("Failed to register (does the user already exist?)");
+            }
+        });
         client = new Client(URI.create("ws://127.0.0.1:1234"));
         client.connect();
-
-        new Login();
     }
 }

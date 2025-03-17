@@ -11,18 +11,21 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class OutboundInitialMessagePacket extends Packet {
 
-    public final String origin;
-    public final Block identityKey;
-    public final Block emphemeralKey;
-    public final long prekeyID;
-    public final Block data;
-    public final PublicKey pubKey;
-    public final long pn;
-    public final long n;
+    public String origin;
+    public Block identityKey;
+    public Block emphemeralKey;
+    public long prekeyID;
+    public Block data;
+    public PublicKey pubKey;
+    public long pn;
+    public long n;
 
+    public OutboundInitialMessagePacket() {
+        super((byte) 0x01, (byte) 0x03);
+    }
 
     public OutboundInitialMessagePacket(String origin, X3DHMessage message) {
-        super((byte) 0x01, (byte) 0x03);
+        this();
 
         this.origin = origin;
         identityKey = message.getIdentityKey();
@@ -35,7 +38,7 @@ public class OutboundInitialMessagePacket extends Packet {
     }
 
     public OutboundInitialMessagePacket(byte[] rawPacket) {
-        super((byte) 0x01, (byte) 0x03);
+        this();
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
 

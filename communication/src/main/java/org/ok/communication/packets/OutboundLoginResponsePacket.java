@@ -28,15 +28,21 @@ public class OutboundLoginResponsePacket extends Packet {
         }
     }
 
-    public final LoginResponseValue response;
+    public LoginResponseValue response;
+
+    public OutboundLoginResponsePacket() {
+        super((byte) 0x01, (byte) 0x12);
+    }
 
     public OutboundLoginResponsePacket(LoginResponseValue response) {
-        super((byte) 0x01, (byte) 0x12);
+        this();
+
         this.response = response;
     }
 
     public OutboundLoginResponsePacket(byte[] rawData) {
-        super((byte) 0x01, (byte) 0x12);
+        this();
+
         this.response = LoginResponseValue.fromValue(rawData[0]);
     }
 

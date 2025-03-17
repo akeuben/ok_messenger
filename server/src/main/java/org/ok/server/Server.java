@@ -21,12 +21,13 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        clients.put(webSocket, new Client(webSocket));
+        if(!clients.containsKey(webSocket)) clients.put(webSocket, new Client());
+        clients.get(webSocket).connect(webSocket);
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        clients.remove(webSocket);
+        clients.get(webSocket).disconnect();
     }
 
     @Override

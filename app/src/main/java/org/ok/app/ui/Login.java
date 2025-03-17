@@ -2,6 +2,7 @@ package org.ok.app.ui;
 
 import org.ok.app.App;
 import org.ok.communication.packets.InboundLoginPacket;
+import org.ok.communication.packets.InboundRegisterPacket;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,11 @@ public class Login extends JFrame {
             loginButton.addActionListener(e -> App.client.send(new InboundLoginPacket(username.getText(), password.getText()).serialize()));
 
             add(loginButton);
+
+            JButton registerButton = new JButton("Register");
+            registerButton.addActionListener(e -> App.client.send(new InboundRegisterPacket(username.getText(), password.getText()).serialize()));
+
+            add(registerButton);
             setVisible(true);
         }
 }

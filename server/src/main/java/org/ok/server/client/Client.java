@@ -2,6 +2,7 @@ package org.ok.server.client;
 
 import org.java_websocket.WebSocket;
 import org.ok.communication.Packet;
+import org.ok.communication.packets.OutboundLoginResponsePacket;
 import org.ok.protocols.Block;
 import org.ok.protocols.hmacsha256.SHA256;
 import org.ok.server.user.User;
@@ -32,23 +33,23 @@ public class Client {
         this.state = ClientState.DISCONNECTED;
     }
 
-    public boolean authenticate(String username, String password) {
+    public OutboundLoginResponsePacket.LoginResponseValue authenticate(String username, String password) {
         if(this.state != ClientState.CONNECTED) {
-            throw new RuntimeException("Client is either disconnected or is already authenticated");
+            return OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER;
         }
         this.user = UserManager.getInstance().getUser(username);
 
         if(this.user == null) {
-            return false;
+            return OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER;
         }
 
-        if(this.user.getPasswordHash() != sha.sha256(new Block(password))) {
-            return false;
+        if(this.user.checkPassword(password)) {
+            return OutboundLoginResponsePacket.LoginResponseValue.INVALID_PASSWORD;
         }
 
         this.state = ClientState.AUTHENTICATED;
 
-        return true;
+        return OutboundLoginResponsePacket.LoginResponseValue.SUCCESS;
     }
 
     public WebSocket getConnection() {
@@ -57,5 +58,9 @@ public class Client {
 
     public User getUser() {
         return user;
+    }
+
+    public void Send(Packet packet) {
+        this.connection.send(packet.serialize());
     }
 }

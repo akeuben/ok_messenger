@@ -1,5 +1,6 @@
 package org.ok.communication;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,11 @@ public class PacketManager<S,R> {
 
     public void register(byte identifier, Class<? extends Packet> packetClass) {
         registeredPacketClasses.put(identifier, packetClass);
+    }
+
+    public void register(Class<? extends Packet> packetClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Packet packet = packetClass.getConstructor(byte[].class).newInstance((Object) new byte[0]);
+
     }
 
     public static <S, R> PacketManager<S,R> getInstance() {

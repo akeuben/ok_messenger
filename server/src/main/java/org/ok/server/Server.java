@@ -9,8 +9,11 @@ import org.ok.server.client.Client;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 public class Server extends WebSocketServer {
+
+    private final HashMap<WebSocket, Client> clients = new HashMap<>();
 
     public Server(int port) {
         super(new InetSocketAddress(port));
@@ -18,25 +21,23 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        System.out.println("Server has received connection: " + webSocket.getRemoteSocketAddress());
-        webSocket.send("Hello client!");
+        clients.put(webSocket, new Client(webSocket));
     }
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        System.out.println("Server has received disconnection: " + webSocket.getRemoteSocketAddress());
+        clients.remove(webSocket);
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String s) {
-        System.out.println("Server has received message " + s + " from " + webSocket.getRemoteSocketAddress());
-        webSocket.send("Pong! " + s);
     }
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
         System.out.println("recieved packet from sender");
-        Client client = new Client(conn);
+
+        Client client = clients.get(conn);
 
         PacketManager.getInstance().handle(message.array(), client, this);
     }

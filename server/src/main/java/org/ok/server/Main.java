@@ -12,7 +12,8 @@ public class Main {
         manager.register((byte) 0x12, OutboundLoginResponsePacket.class);
 
         manager.addHandler(InboundLoginPacket.class, (p, s, r) -> {
-            s.getConnection().send(new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER).serialize());
+            OutboundLoginResponsePacket.LoginResponseValue res = s.authenticate(p.username, p.password);
+            s.Send(new OutboundLoginResponsePacket(res));
         });
         Server server = new Server(1234);
         server.start();

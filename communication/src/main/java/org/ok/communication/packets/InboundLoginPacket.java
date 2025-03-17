@@ -7,18 +7,22 @@ import java.nio.charset.StandardCharsets;
 
 public class InboundLoginPacket extends Packet {
 
-    public final String username;
-    public final String password;
+    public String username;
+    public String password;
+
+    public InboundLoginPacket() {
+        super((byte) 0x01, (byte) 0x02);
+    }
 
     public InboundLoginPacket(String username, String password) {
-        super((byte) 0x01, (byte) 0x02);
+        this();
 
         this.username = username;
         this.password = password;
     }
 
     public InboundLoginPacket(byte[] data) {
-        super((byte) 0x01, (byte) 0x02);
+        this();
 
         ByteBuffer buffer = ByteBuffer.wrap(data);
 

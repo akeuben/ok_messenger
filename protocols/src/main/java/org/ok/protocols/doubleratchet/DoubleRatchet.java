@@ -92,7 +92,9 @@ public class DoubleRatchet implements Serializable {
         if (plaintext != null) {
             return plaintext;
         }
-        if (message.header.pubKey != DHr) {
+        System.out.println("Message header pub key: " + new Block(message.header.pubKey.getEncoded()));
+        if(DHr != null) System.out.println("DHr: " + new Block(DHr.getEncoded()));
+        if (!message.header.pubKey.equals(DHr)) {
             skipMessageKeys(message.header.pn);
             ratchet(message.header);
         }
@@ -116,6 +118,7 @@ public class DoubleRatchet implements Serializable {
     }
 
     private void ratchet(DoubleRatchetMessageHeader header) {
+        System.out.println("Ratcheting!");
         PN = Ns;
         Ns = 0;
         Nr = 0;
@@ -148,6 +151,7 @@ public class DoubleRatchet implements Serializable {
                 }
                 MKSKIPPED.get(DHr).put(Nr, mk);
                 Nr += 1;
+                System.out.println("Skipped one message");
             }
         }
     }

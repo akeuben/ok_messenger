@@ -1,15 +1,12 @@
 package org.ok.protocols.aes;
 
 import org.ok.protocols.Block;
+import org.ok.protocols.aes.AES256;
+import org.ok.protocols.aes.AESKey;
 
 public class AES256CBC {
-    private AES256 aes;
 
-    public AES256CBC() {
-        aes = new AES256();
-    }
-
-    public Block encrypt(Block plaintext_unpadded, Block iv, AESKey key) {
+    public static Block encrypt(Block plaintext_unpadded, Block iv, AESKey key) {
         int blockSize = 16;
         Block plaintext = plaintext_unpadded.pkcs7Pad(16);
         int numBlocks = plaintext.getSizeBytes() / blockSize;
@@ -20,13 +17,13 @@ public class AES256CBC {
         for(int i = 1; i <= numBlocks; i++) {
             int start = (i - 1) * blockSize;
             int end = start + blockSize;
-            blocks[i] = aes.encrypt(plaintext.subData(start, end).xor(blocks[i-1]), key);
+            blocks[i] = AES256.encrypt(plaintext.subData(start, end).xor(blocks[i-1]), key);
         }
 
         return Block.concat(blocks);
     }
 
-    public Block decrypt(Block ciphertext, AESKey key) {
+    public static Block decrypt(Block ciphertext, AESKey key) {
         int blockSize = 16;
         int numBlocks = ciphertext.getSizeBytes()/blockSize - 1;
 
@@ -34,7 +31,7 @@ public class AES256CBC {
         for(int i = 0; i < numBlocks; i++) {
             Block thisBlock = ciphertext.subData((i + 1) * blockSize, (i + 2) * blockSize);
             Block prevBlock = ciphertext.subData(i * blockSize, (i + 1) * blockSize);
-            decrypted[i] = aes.decrypt(thisBlock, key).xor(prevBlock);
+            decrypted[i] = AES256.decrypt(thisBlock, key).xor(prevBlock);
         }
 
         return Block.concat(decrypted).pkcs7Unpad(blockSize);

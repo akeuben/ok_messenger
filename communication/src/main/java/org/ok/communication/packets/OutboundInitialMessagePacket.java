@@ -3,6 +3,8 @@ package org.ok.communication.packets;
 import org.ok.communication.Packet;
 import org.ok.protocols.Block;
 import org.ok.protocols.diffiehellman.DiffieHellman;
+import org.ok.protocols.doubleratchet.DoubleRatchetMessage;
+import org.ok.protocols.doubleratchet.DoubleRatchetMessageHeader;
 import org.ok.protocols.x3dh.X3DHMessage;
 
 import java.nio.ByteBuffer;
@@ -50,6 +52,10 @@ public class OutboundInitialMessagePacket extends Packet {
         pubKey = (PublicKey) deserializeKey(buffer, "XDH", X509EncodedKeySpec.class);
         pn = buffer.getLong();
         n = buffer.getLong();
+    }
+
+    public X3DHMessage getMessage() {
+        return new X3DHMessage(identityKey, emphemeralKey, prekeyID, new DoubleRatchetMessage(data, new DoubleRatchetMessageHeader(pubKey, pn, n)));
     }
 
     @Override

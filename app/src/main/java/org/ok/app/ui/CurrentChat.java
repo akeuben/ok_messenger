@@ -2,6 +2,7 @@ package org.ok.app.ui;
 
 import org.ok.app.App;
 import org.ok.app.Chat;
+import org.ok.app.ClientManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,13 @@ public class CurrentChat extends JPanel {
     public CurrentChat(Chat chat) {
         super();
         setLayout(new GridBagLayout());
+
+        setChat(chat);
+    }
+
+    public void setChat(Chat chat) {
+        removeAll();
+
         this.chat = chat;
 
         GridBagConstraints c = new GridBagConstraints();
@@ -20,6 +28,11 @@ public class CurrentChat extends JPanel {
         c.weightx = 1;
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
+
+        if(chat == null) {
+            add(new JLabel("Click a chat to get started!"), c);
+            return;
+        }
 
         JList<String> messages = new JList<>(chat);
         JScrollPane pane = new JScrollPane(messages);
@@ -44,7 +57,7 @@ public class CurrentChat extends JPanel {
         c.weighty = 0;
         c.fill = GridBagConstraints.NONE;
         sendButton.addActionListener(e -> {
-            chat.sendMessage(messageField.getText(), App.client);
+            chat.sendMessage(messageField.getText(), ClientManager.get());
         });
 
         panel.add(sendButton, c);
@@ -55,7 +68,6 @@ public class CurrentChat extends JPanel {
         c.weighty = 0;
         c.fill = GridBagConstraints.HORIZONTAL;
         add(panel, c);
-
     }
 
 

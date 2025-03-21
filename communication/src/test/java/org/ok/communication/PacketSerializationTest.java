@@ -6,10 +6,7 @@ import org.ok.protocols.Block;
 import org.ok.protocols.diffiehellman.DiffieHellman;
 import org.ok.protocols.doubleratchet.DoubleRatchet;
 import org.ok.protocols.doubleratchet.DoubleRatchetMessage;
-import org.ok.protocols.x3dh.PrekeyBundle;
-import org.ok.protocols.x3dh.X3DH;
-import org.ok.protocols.x3dh.X3DHMessage;
-import org.ok.protocols.x3dh.X3DHResult;
+import org.ok.protocols.x3dh.*;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 
@@ -17,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,11 +77,11 @@ public class PacketSerializationTest {
     public void TestOutboundInitialMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         PacketManager.getInstance().register((byte) 0x03, OutboundInitialMessagePacket.class);
 
-        Curve25519KeyPair aliceKeys = curve.generateKeyPair();
-        Curve25519KeyPair bobKeys = curve.generateKeyPair();
+        X3DHKeyPair aliceKeys = new X3DHKeyPair(curve.generateKeyPair());
+        X3DHKeyPair bobKeys = new X3DHKeyPair(curve.generateKeyPair());
 
-        Curve25519KeyPair bobSignedPrekey = curve.generateKeyPair();
-        Curve25519KeyPair bobOneTimePrekey = curve.generateKeyPair();
+        X3DHKeyPair bobSignedPrekey = new X3DHKeyPair(curve.generateKeyPair());
+        X3DHKeyPair bobOneTimePrekey = new X3DHKeyPair(curve.generateKeyPair());
 
         PrekeyBundle bobPrekeyBundle = X3DH.createPrekeyBundle(bobKeys, bobSignedPrekey, bobOneTimePrekey);
 
@@ -115,11 +113,11 @@ public class PacketSerializationTest {
     public void TestInboundInitialMessagePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         PacketManager.getInstance().register((byte) 0x13, InboundInitialMessagePacket.class);
 
-        Curve25519KeyPair aliceKeys = curve.generateKeyPair();
-        Curve25519KeyPair bobKeys = curve.generateKeyPair();
+        X3DHKeyPair aliceKeys = new X3DHKeyPair(curve.generateKeyPair());
+        X3DHKeyPair bobKeys = new X3DHKeyPair(curve.generateKeyPair());
 
-        Curve25519KeyPair bobSignedPrekey = curve.generateKeyPair();
-        Curve25519KeyPair bobOneTimePrekey = curve.generateKeyPair();
+        X3DHKeyPair bobSignedPrekey = new X3DHKeyPair(curve.generateKeyPair());
+        X3DHKeyPair bobOneTimePrekey = new X3DHKeyPair(curve.generateKeyPair());
 
         PrekeyBundle bobPrekeyBundle = X3DH.createPrekeyBundle(bobKeys, bobSignedPrekey, bobOneTimePrekey);
 
@@ -198,20 +196,23 @@ public class PacketSerializationTest {
     @Test
     public void TestOutboundLoginResponsePacket() {
         PacketManager.getInstance().register((byte) 0x12, OutboundLoginResponsePacket.class);
-        OutboundLoginResponsePacket packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_PASSWORD);
+        OutboundLoginResponsePacket packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_PASSWORD, "avery");
         OutboundLoginResponsePacket decoded = encodeDecode(packet);
 
         assertEquals(packet.response, decoded.response);
+        assertEquals(packet.username, decoded.username);
 
-        packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER);
+        packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.INVALID_USER, "avery");
         decoded = encodeDecode(packet);
 
         assertEquals(packet.response, decoded.response);
+        assertEquals(packet.username, decoded.username);
 
-        packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.SUCCESS);
+        packet = new OutboundLoginResponsePacket(OutboundLoginResponsePacket.LoginResponseValue.SUCCESS, "avery");
         decoded = encodeDecode(packet);
 
         assertEquals(packet.response, decoded.response);
+        assertEquals(packet.username, decoded.username);
     }
 
     @Test
@@ -290,7 +291,7 @@ public class PacketSerializationTest {
         }
     }
     @Test
-    public void TestOutboundPrekeyBundlePacket() {
+    public void TestOutboundPrekeyBundlePacket() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         PacketManager.getInstance().register((byte) 0x06, OutboundPrekeyBundlePacket.class);
 
         Block identityKey1 = new Block(new byte[]{1, 2, 3});
@@ -298,8 +299,10 @@ public class PacketSerializationTest {
         Block prekeySignature1 = new Block(new byte[]{7, 8, 9});
         Block oneTimePrekey1 = new Block(new byte[]{10, 11, 12});
 
+        PublicKey key = DiffieHellman.GenerateKeyPair().getPublic();
+
         PrekeyBundle bundle1 = new PrekeyBundle(identityKey1, signedPrekey1, prekeySignature1, oneTimePrekey1);
-        OutboundPrekeyBundlePacket packet1 = new OutboundPrekeyBundlePacket(bundle1);
+        OutboundPrekeyBundlePacket packet1 = new OutboundPrekeyBundlePacket(bundle1, key);
         OutboundPrekeyBundlePacket decoded1 = encodeDecode(packet1);
 
         assertEquals(packet1.bundle.getIdentityKey().getData().length, decoded1.bundle.getIdentityKey().getData().length);
@@ -313,7 +316,7 @@ public class PacketSerializationTest {
         Block prekeySignature2 = new Block(new byte[]{16, 17, 18, 19});
 
         PrekeyBundle bundle2 = new PrekeyBundle(identityKey2, signedPrekey2, prekeySignature2);
-        OutboundPrekeyBundlePacket packet2 = new OutboundPrekeyBundlePacket(bundle2);
+        OutboundPrekeyBundlePacket packet2 = new OutboundPrekeyBundlePacket(bundle2, key);
         OutboundPrekeyBundlePacket decoded2 = encodeDecode(packet2);
 
         assertArrayEquals(packet2.bundle.getIdentityKey().getData(), decoded2.bundle.getIdentityKey().getData());
@@ -326,7 +329,7 @@ public class PacketSerializationTest {
         Block prekeySignature3 = new Block(new byte[]{});
         Block onetimePrekey3 = new Block(new byte[]{});
         PrekeyBundle bundle3 = new PrekeyBundle(identityKey3, signedPrekey3, prekeySignature3,onetimePrekey3);
-        OutboundPrekeyBundlePacket packet3 = new OutboundPrekeyBundlePacket(bundle3);
+        OutboundPrekeyBundlePacket packet3 = new OutboundPrekeyBundlePacket(bundle3, key);
         OutboundPrekeyBundlePacket decoded3 = encodeDecode(packet3);
         assertArrayEquals(packet3.bundle.getIdentityKey().getData(), decoded3.bundle.getIdentityKey().getData());
         assertArrayEquals(packet3.bundle.getSignedPrekey().getData(), decoded3.bundle.getSignedPrekey().getData());

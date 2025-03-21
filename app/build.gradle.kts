@@ -15,6 +15,8 @@ dependencies {
     implementation("org.apache.commons:commons-text")
     implementation(project(":communication"))
     implementation(project(":protocols"))
+    implementation("org.whispersystems:curve25519-java:0.5.0")
+    implementation("com.h2database:h2-mvstore:1.4.186")
 }
 
 application {

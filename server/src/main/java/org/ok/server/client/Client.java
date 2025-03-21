@@ -9,7 +9,6 @@ import org.ok.server.user.User;
 import org.ok.server.user.UserManager;
 
 public class Client {
-    private static SHA256 sha = new SHA256();
     private ClientState state;
     private User user;
 

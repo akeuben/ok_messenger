@@ -19,6 +19,15 @@ public class Server extends WebSocketServer {
         super(new InetSocketAddress(port));
     }
 
+    public Client getClient(String username) {
+        for(Client client : clients.values()) {
+            if(client.getUser().getUsername().equals(username)) {
+                return client;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         if(!clients.containsKey(webSocket)) clients.put(webSocket, new Client());
@@ -27,7 +36,7 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        clients.get(webSocket).disconnect();
+        clients.remove(webSocket).disconnect();
     }
 
     @Override

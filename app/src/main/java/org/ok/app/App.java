@@ -7,18 +7,17 @@ import org.ok.app.ui.CoreApp;
 import org.ok.app.ui.Login;
 import org.ok.communication.PacketManager;
 import org.ok.communication.packets.*;
+import org.ok.protocols.Block;
+import org.ok.protocols.x3dh.X3DH;
+import org.ok.protocols.x3dh.X3DHResult;
 
-import javax.swing.*;
-import java.net.URI;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class App {
-    public static Client client;
 
     public static void main(String[] args) {
-        AtomicReference<JFrame> currentWindow = new AtomicReference<>(new Login());
+        WindowManager.set(new Login());
 
         PacketManager<Void, Client> manager = PacketManager.getInstance();
         manager.register(InboundLoginPacket.class);
@@ -35,19 +34,28 @@ public class App {
         manager.register(OutboundPrekeyBundlePacket.class);
         manager.register(OutboundRegisterResponsePacket.class);
         manager.register(OutboundRequestPrekeysPacket.class);
+        manager.register(InboundUpdateKeysPacket.class);
+        manager.register(NoSuchUserPacket.class);
 
         manager.addHandler(OutboundLoginResponsePacket.class, (p, s, r) -> {
             switch(p.response) {
                 case INVALID_PASSWORD -> System.out.println("Invalid Password");
                 case INVALID_USER -> System.out.println("Invalid Username");
                 case SUCCESS -> {
-                    currentWindow.get().setVisible(false);
-                    currentWindow.get().dispose();
+                    ChatManager.init(new InMemoryChatProvider());
+                    SecretManager.init(new InMemorySecretProvider(p.username));
                     try {
-                        currentWindow.set(new CoreApp());
+                        WindowManager.set(new CoreApp());
                     } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
                         throw new RuntimeException(e);
                     }
+
+                    System.out.println("Sent the public DH key: " + new Block(SecretManager.getInstance().getDHKeyPair().getPublic().getEncoded()));
+
+                    r.send(new InboundUpdateKeysPacket(X3DH.createPrekeyBundle(
+                            SecretManager.getInstance().x3DHKeyPair(),
+                            SecretManager.getInstance().signedPrekey()
+                    ), SecretManager.getInstance().getDHKeyPair().getPublic()).serialize());
                 }
             }
         });
@@ -59,7 +67,23 @@ public class App {
                 System.out.println("Failed to register (does the user already exist?)");
             }
         });
-        client = new Client(URI.create("ws://127.0.0.1:1234"));
-        client.connect();
+
+        manager.addHandler(OutboundInitialMessagePacket.class, (p, s, r) -> {
+            X3DHResult result = X3DH.runReceive(SecretManager.getInstance().x3DHKeyPair(), SecretManager.getInstance().signedPrekey(), null, p.getMessage());
+            Chat chat = new Chat(p.origin, result.getSK(), result.getAD(), SecretManager.getInstance().getDHKeyPair());
+            System.out.println("Using the public DH key: " + new Block(SecretManager.getInstance().getDHKeyPair().getPublic().getEncoded()));
+            chat.recieveMessage(p.getMessage().getMessage());
+            ChatManager.getInstance().addChat(p.origin, chat);
+        });
+
+        manager.addHandler(OutboundMessagePacket.class, (p, s, r) -> {
+            ChatManager.getInstance().getChat(p.origin).recieveMessage(p.getMessage());
+        });
+
+        ClientManager.connect();
+    }
+
+    public static void exit() {
+        System.exit(0);
     }
 }

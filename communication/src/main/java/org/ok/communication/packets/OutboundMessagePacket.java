@@ -3,6 +3,7 @@ package org.ok.communication.packets;
 import org.ok.communication.Packet;
 import org.ok.protocols.Block;
 import org.ok.protocols.doubleratchet.DoubleRatchetMessage;
+import org.ok.protocols.doubleratchet.DoubleRatchetMessageHeader;
 
 import java.nio.ByteBuffer;
 import java.security.PublicKey;
@@ -39,6 +40,10 @@ public class OutboundMessagePacket extends Packet {
         this.pubKey = (PublicKey) deserializeKey(buffer, "XDH", X509EncodedKeySpec.class);
         this.pn = buffer.getLong();
         this.n = buffer.getLong();
+    }
+
+    public DoubleRatchetMessage getMessage() {
+        return new DoubleRatchetMessage(data, new DoubleRatchetMessageHeader(pubKey, pn, n));
     }
 
     @Override

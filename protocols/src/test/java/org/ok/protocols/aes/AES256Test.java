@@ -84,7 +84,7 @@ public class AES256Test {
             Block expectedCiphertext = expectedCiphertexts[i];
             AESKey key = knownKeys[i];
 
-            Block actualCiphertext = new AES256().encrypt(msg, key);
+            Block actualCiphertext = AES256.encrypt(msg, key);
 
             assertEquals(expectedCiphertext, actualCiphertext);
         }
@@ -167,7 +167,7 @@ public class AES256Test {
             Block ciphertext = ciphertexts[i];
             AESKey key = knownKeys[i];
 
-            Block actualMsg = new AES256().decrypt(ciphertext, key);
+            Block actualMsg = AES256.decrypt(ciphertext, key);
 
             assertEquals(expectedMsg, actualMsg);
         }

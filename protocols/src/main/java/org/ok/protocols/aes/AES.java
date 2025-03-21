@@ -43,10 +43,6 @@ public abstract class AES {
             (byte) 0x17, (byte) 0x2b, (byte) 0x04, (byte) 0x7e, (byte) 0xba, (byte) 0x77, (byte) 0xd6, (byte) 0x26, (byte) 0xe1, (byte) 0x69, (byte) 0x14, (byte) 0x63, (byte) 0x55, (byte) 0x21, (byte) 0x0c, (byte) 0x7d
     };
 
-    public abstract Block encrypt(Block block, AESKey key);
-
-    public abstract Block decrypt(Block block, AESKey key);
-
     static Block Enc_AddRoundKey(Block data, Block roundKey) {
         assert data.getSizeBits() == 128;
         return data.xor(roundKey);

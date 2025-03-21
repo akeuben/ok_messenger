@@ -1,19 +1,26 @@
 package org.ok.app.ui;
 
-import org.ok.app.Chat;
+import org.ok.app.*;
 import org.ok.protocols.Block;
 import org.ok.protocols.diffiehellman.DiffieHellman;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CoreApp extends JFrame {
+public class CoreApp extends JFrame implements WindowListener {
+
+    private Map<String, CurrentChat> chats = new HashMap<>();
 
     public CoreApp() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         super("OK Messenger");
+        addWindowListener(this);
 
         setSize(600, 400);
 
@@ -25,7 +32,15 @@ public class CoreApp extends JFrame {
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
 
-        add(new ChatList(), c);
+        CurrentChat chat = new CurrentChat(null);
+
+        add(new ChatList((s -> {
+            chat.setChat(ChatManager.getInstance().getChat(s));
+            revalidate();
+            repaint();
+            chat.revalidate();
+            chat.repaint();
+        })), c);
 
         c.gridx = 1;
         c.gridy = 0;
@@ -33,13 +48,44 @@ public class CoreApp extends JFrame {
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
 
-        Block SK = Block.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
-        Block AD = Block.fromHexString("44116f1a6af9c79c123B8A12");
-
-        KeyPair bobKeyPair = DiffieHellman.GenerateKeyPair();
-
-        add(new CurrentChat(new Chat("other", SK, AD, bobKeyPair.getPublic())), c);
+        add(chat, c);
 
         setVisible(true);
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        ClientManager.reconnect();
+        WindowManager.set(new Login());
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
     }
 }

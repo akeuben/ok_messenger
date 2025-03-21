@@ -12,6 +12,7 @@ public class PacketManager<S,R> {
 
     private final HashMap<Byte, Class<? extends Packet>> registeredPacketClasses = new HashMap<>();
     private final HashMap<Class<? extends Packet>, List<PacketHandler<?, S, R>>> handlers = new HashMap<>();
+    private final HashMap<Class<? extends Packet>, List<PacketHandler<?, S, R>>> oneTimeHandlers = new HashMap<>();
 
     public void register(byte identifier, Class<? extends Packet> packetClass) {
         registeredPacketClasses.put(identifier, packetClass);
@@ -65,11 +66,28 @@ public class PacketManager<S,R> {
         handlers.get(clazz).add(handler);
     }
 
+    public <T extends Packet> void addOneShotHandler(Class<T> clazz, PacketHandler<T,S,R> handler) {
+        if(!oneTimeHandlers.containsKey(clazz)) {
+            oneTimeHandlers.put(clazz, new ArrayList<>());
+        }
+        oneTimeHandlers.get(clazz).add(handler);
+    }
+
     public <T extends Packet> void handle(T packet, S sender, R receiver) {
         List<PacketHandler<? extends Packet, S, R>> packetHandlers = handlers.get(packet.getClass());
-        for(PacketHandler<? extends Packet, S, R> handler : packetHandlers) {
-            //noinspection unchecked
-            ((PacketHandler<T,S,R>) handler).handlePacket(packet, sender, receiver);
+        if(packetHandlers != null) {
+            for (PacketHandler<? extends Packet, S, R> handler : packetHandlers) {
+                //noinspection unchecked
+                ((PacketHandler<T, S, R>) handler).handlePacket(packet, sender, receiver);
+            }
+        }
+        packetHandlers = oneTimeHandlers.get(packet.getClass());
+        if(packetHandlers != null) {
+            for (PacketHandler<? extends Packet, S, R> handler : packetHandlers) {
+                //noinspection unchecked
+                ((PacketHandler<T, S, R>) handler).handlePacket(packet, sender, receiver);
+            }
+            packetHandlers.clear();
         }
     }
 

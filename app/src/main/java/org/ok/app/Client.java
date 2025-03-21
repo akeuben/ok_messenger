@@ -10,8 +10,6 @@ import java.util.ArrayList;
 
 public class Client extends WebSocketClient {
 
-    public MessageQueue receiveQueue = new MessageQueue();
-
     public Client(URI serverUri) {
         super(serverUri);
     }
@@ -23,7 +21,6 @@ public class Client extends WebSocketClient {
 
     @Override
     public void onMessage(String s) {
-        receiveQueue.addMessage(s);
     }
 
     @Override
@@ -39,5 +36,6 @@ public class Client extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         System.out.println("Error: " + e);
+        App.exit();
     }
 }

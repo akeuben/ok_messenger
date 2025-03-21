@@ -8,16 +8,10 @@ import org.ok.protocols.Block;
 
 public class HMAC {
 
-    private final int SHA256_HASH_SIZE = 32;
-    private final int BLOCK_SIZE = 64;
+    private static final int SHA256_HASH_SIZE = 32;
+    private static final int BLOCK_SIZE = 64;
 
-    private SHA256 sha;
-
-    public HMAC() {
-        sha = new SHA256();
-    }
-
-    private Block hmacSha256(Block key, Block data) {
+    private static Block hmacSha256(Block key, Block data) {
         int[] k = new int[BLOCK_SIZE];
         int[] kIpad = new int[BLOCK_SIZE];
         int[] kOpad = new int[BLOCK_SIZE];
@@ -39,7 +33,7 @@ public class HMAC {
         if (keylen > BLOCK_SIZE) {
             // If the key is larger than the hash algorithm's
             // block size, we must digest it first.
-            Block out = sha.sha256(key);
+            Block out = SHA256.sha256(key);
         } else {
             for (i = 0; i < keylen; i++) {
                 k[i] = (byte) key.getData()[i];
@@ -59,7 +53,7 @@ public class HMAC {
         return ohash;
     }
 
-    private Block H(int[] x, long xlen, Block y, long ylen, long outlen) {
+    private static Block H(int[] x, long xlen, Block y, long ylen, long outlen) {
         long buflen = (xlen + ylen);
         int[] buf = new int[(int) buflen];
 
@@ -73,10 +67,10 @@ public class HMAC {
         for (int i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) (buf[i] & 0xFF);
         }
-        return sha.sha256(new Block(buffer.length, buffer));
+        return SHA256.sha256(new Block(buffer.length, buffer));
     }
 
-    public Block encode(Block value, Block key) {
+    public static Block encode(Block value, Block key) {
         return hmacSha256(key, value);
     }
 }

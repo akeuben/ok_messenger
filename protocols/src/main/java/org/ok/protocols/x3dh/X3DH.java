@@ -13,23 +13,32 @@ public class X3DH {
     private static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
 
     public static Block signPrekey(byte[] privateKey, byte[] publicKeyToSign) {
+        System.out.println("Signing key " + new Block(publicKeyToSign) + " with " + new Block(privateKey));
+        System.out.println("Result: " + new Block(curve.calculateSignature(privateKey, publicKeyToSign)));
+        System.out.println("Result: " + new Block(curve.calculateSignature(privateKey, publicKeyToSign)));
         return new Block(curve.calculateSignature(privateKey, publicKeyToSign));
     }
 
-    public static PrekeyBundle createPrekeyBundle(Curve25519KeyPair keyPair, Curve25519KeyPair preKeyPair) {
+    public static PrekeyBundle createPrekeyBundle(X3DHKeyPair keyPair, X3DHKeyPair preKeyPair) {
         Block signedPreKey = new Block(preKeyPair.getPublicKey());
         Block prekeySignature = signPrekey(keyPair.getPrivateKey(), signedPreKey.getData());
         return new PrekeyBundle(new Block(keyPair.getPublicKey()), signedPreKey, prekeySignature);
     }
 
-    public static PrekeyBundle createPrekeyBundle(Curve25519KeyPair keyPair, Curve25519KeyPair preKeyPair, Curve25519KeyPair oneTimeKey) {
+    public static PrekeyBundle createPrekeyBundle(X3DHKeyPair keyPair, X3DHKeyPair preKeyPair, X3DHKeyPair oneTimeKey) {
         Block signedPreKey = new Block(preKeyPair.getPublicKey());
         Block prekeySignature = signPrekey(keyPair.getPrivateKey(), signedPreKey.getData());
         return new PrekeyBundle(new Block(keyPair.getPublicKey()), signedPreKey, prekeySignature, new Block(oneTimeKey.getPublicKey()));
     }
 
-    public static X3DHResult runSend(PrekeyBundle prekeyBundle, Curve25519KeyPair keyPair) {
-        Curve25519KeyPair ephemeralKey = curve.generateKeyPair();
+    public static X3DHResult runSend(PrekeyBundle prekeyBundle, X3DHKeyPair keyPair) {
+        X3DHKeyPair ephemeralKey = X3DHKeyPair.from("10c198b305f726707e71c4c93250bba65134aba7d2b586b97e049538d78e4c6f", "68a16f84504c35fa7d2e973a1f6b60d85a0380996f995039d97a063962b8b26e");
+
+        System.out.println("X3DH SEND");
+        System.out.println("Bundle id: " + prekeyBundle.getIdentityKey());
+        System.out.println("Bundle spk: " + prekeyBundle.getSignedPrekey());
+        System.out.println("Bundle spks: " + prekeyBundle.getPrekeySignature());
+        System.out.println("Bundle OTP: " + prekeyBundle.getOneTimePrekey());
 
         if(!curve.verifySignature(
                 prekeyBundle.getIdentityKey().getData(),
@@ -57,7 +66,15 @@ public class X3DH {
         }
     }
 
-    public static X3DHResult runReceive(Curve25519KeyPair identityKey, Curve25519KeyPair signedPrekey, Curve25519KeyPair oneTimePrekey, X3DHMessage message) {
+    public static X3DHResult runReceive(X3DHKeyPair identityKey, X3DHKeyPair signedPrekey, X3DHKeyPair oneTimePrekey, X3DHMessage message) {
+        System.out.println("X3DH RECEIVE");
+        System.out.println("Identity: Pub: " + new Block(identityKey.getPublicKey()) + ", Priv:" + new Block(identityKey.getPrivateKey()));
+        System.out.println("Prekey: Pub: " + new Block(signedPrekey.getPublicKey()) + ", Priv:" + new Block(signedPrekey.getPrivateKey()));
+        System.out.println("OTP: " + oneTimePrekey);
+        System.out.println("Message id:" + message.identityKey);
+        System.out.println("Message em:" + message.emphemeralKey);
+        System.out.println("Message pki:" + message.prekeyID);
+        System.out.println("Message hpk:" + new Block(message.message.getHeader().getPubKey().getEncoded()));
         byte[] ephemeralKey = message.getEmphemeralKey().getData();
         Block AD = Block.concat(message.getIdentityKey(), new Block(identityKey.getPublicKey()));
 

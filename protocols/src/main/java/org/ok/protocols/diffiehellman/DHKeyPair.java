@@ -1,10 +1,11 @@
 package org.ok.protocols.diffiehellman;
 
+import java.io.Serializable;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.NamedParameterSpec;
 
-public class DHKeyPair {
+public class DHKeyPair implements Serializable {
     private static KeyPairGenerator kpg;
     private static final NamedParameterSpec paramSpec = new NamedParameterSpec("X25519");
 

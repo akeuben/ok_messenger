@@ -2,6 +2,7 @@ package org.ok.communication.packets;
 
 import org.ok.communication.Packet;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,21 +30,26 @@ public class OutboundLoginResponsePacket extends Packet {
     }
 
     public LoginResponseValue response;
+    public String username;
 
     public OutboundLoginResponsePacket() {
         super((byte) 0x01, (byte) 0x12);
     }
 
-    public OutboundLoginResponsePacket(LoginResponseValue response) {
+    public OutboundLoginResponsePacket(LoginResponseValue response, String username) {
         this();
 
         this.response = response;
+        this.username = username;
     }
 
     public OutboundLoginResponsePacket(byte[] rawData) {
         this();
 
-        this.response = LoginResponseValue.fromValue(rawData[0]);
+        ByteBuffer buffer = ByteBuffer.wrap(rawData);
+
+        this.username = deserializeString(buffer);
+        this.response = LoginResponseValue.fromValue(buffer.get());
     }
 
     public LoginResponseValue getResponse() {
@@ -52,7 +58,9 @@ public class OutboundLoginResponsePacket extends Packet {
 
     @Override
     protected byte[] serializeData() {
-        return new byte[] {response.value};
+        byte[] username = serializeString(this.username);
+        ByteBuffer buffer = ByteBuffer.allocate(username.length + 1);
+        return buffer.put(username).put(response.value).array();
     }
 
 }

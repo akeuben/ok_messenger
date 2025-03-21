@@ -85,10 +85,9 @@ public class AES256CBCTest {
             Block iv = Block.fromHexString("44116f1a6af9c79c44116f1a6af9c79c");
 
             AESKey key = AESKey.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
-            AES256CBC aes = new AES256CBC();
 
-            Block encrypted = aes.encrypt(msg, iv, key);
-            Block decrypted = aes.decrypt(encrypted, key);
+            Block encrypted = AES256CBC.encrypt(msg, iv, key);
+            Block decrypted = AES256CBC.decrypt(encrypted, key);
 
             assertEquals(msg, decrypted);
         }

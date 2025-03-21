@@ -10,6 +10,8 @@ import org.ok.protocols.x3dh.X3DH;
 import org.ok.protocols.x3dh.X3DHResult;
 
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.security.KeyPair;
 import java.util.function.Consumer;
@@ -42,6 +44,23 @@ public class ChatList extends JPanel {
             onChatSelected.accept(list.getSelectedValue());
         });
 
+        list.getModel().addListDataListener(new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+                onChatSelected.accept(list.getSelectedValue());
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+                onChatSelected.accept(list.getSelectedValue());
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+                onChatSelected.accept(list.getSelectedValue());
+            }
+        });
+
         add(pane, c);
     }
 
@@ -49,6 +68,10 @@ public class ChatList extends JPanel {
         JButton newChatButton = new JButton("New Chat");
         newChatButton.addActionListener(e -> {
             String username = JOptionPane.showInputDialog(WindowManager.get(), "Enter Username", "New Chat Wizard", JOptionPane.QUESTION_MESSAGE);
+            if(username.equals(App.username)) {
+                JOptionPane.showMessageDialog(WindowManager.get(), "You cannot send a message to yourself!", "New Chat Wizard", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             PacketManager.getInstance().addOneShotHandler(OutboundPrekeyBundlePacket.class, (p, s, r) -> {
                 String message = JOptionPane.showInputDialog(WindowManager.get(), "Enter First Message", "New Chat Wizard", JOptionPane.QUESTION_MESSAGE);
 

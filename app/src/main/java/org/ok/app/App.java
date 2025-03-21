@@ -16,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class App {
 
+    public static String username;
+
     public static void main(String[] args) {
         WindowManager.set(new Login());
 
@@ -42,6 +44,7 @@ public class App {
                 case INVALID_PASSWORD -> System.out.println("Invalid Password");
                 case INVALID_USER -> System.out.println("Invalid Username");
                 case SUCCESS -> {
+                    App.username = p.username;
                     ChatManager.init(new InMemoryChatProvider());
                     SecretManager.init(new InMemorySecretProvider(p.username));
                     try {
@@ -77,7 +80,10 @@ public class App {
         });
 
         manager.addHandler(OutboundMessagePacket.class, (p, s, r) -> {
-            ChatManager.getInstance().getChat(p.origin).recieveMessage(p.getMessage());
+            Chat chat = ChatManager.getInstance().getChat(p.origin);
+            if(chat != null) {
+                chat.recieveMessage(p.getMessage());
+            }
         });
 
         ClientManager.connect();

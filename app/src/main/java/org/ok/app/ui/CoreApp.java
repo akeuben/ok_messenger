@@ -16,10 +16,10 @@ import java.util.Map;
 
 public class CoreApp extends JFrame implements WindowListener {
 
-    private Map<String, CurrentChat> chats = new HashMap<>();
+    CurrentChat chat;
 
     public CoreApp() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        super("OK Messenger");
+        super("OK Messenger: " + App.username);
         addWindowListener(this);
 
         setSize(600, 400);
@@ -32,7 +32,7 @@ public class CoreApp extends JFrame implements WindowListener {
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
 
-        CurrentChat chat = new CurrentChat(null);
+        chat = new CurrentChat(null);
 
         add(new ChatList((s -> {
             chat.setChat(ChatManager.getInstance().getChat(s));

@@ -8,6 +8,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CurrentChat extends JPanel {
+    public Chat getChat() {
+        return chat;
+    }
+
     private Chat chat;
 
     public CurrentChat(Chat chat) {

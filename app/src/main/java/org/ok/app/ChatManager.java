@@ -40,7 +40,7 @@ public class ChatManager extends AbstractListModel<String> implements ChatProvid
     public void addChat(String username, Chat chat) {
         provider.addChat(username, chat);
 
-        this.fireContentsChanged(this, getSize() - 1, getSize() - 1);
+        this.fireContentsChanged(this, 0, getSize() - 1);
     }
 
     @Override

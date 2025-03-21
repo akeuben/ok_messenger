@@ -8,10 +8,10 @@ import org.ok.protocols.Block;
 
 public class HMAC {
 
-    private static final int SHA256_HASH_SIZE = 32;
-    private static final int BLOCK_SIZE = 64;
+    private final int SHA256_HASH_SIZE = 32;
+    private final int BLOCK_SIZE = 64;
 
-    private static Block hmacSha256(Block key, Block data) {
+    private Block hmacSha256(Block key, Block data) {
         int[] k = new int[BLOCK_SIZE];
         int[] kIpad = new int[BLOCK_SIZE];
         int[] kOpad = new int[BLOCK_SIZE];
@@ -53,16 +53,19 @@ public class HMAC {
         return ohash;
     }
 
-    private static Block H(int[] x, long xlen, Block y, long ylen, long outlen) {
+    private Block H(int[] x, long xlen, Block y, long ylen, long outlen) {
         long buflen = (xlen + ylen);
         int[] buf = new int[(int) buflen];
 
+        // Concatenate x and y
         for (int i = 0; i < xlen; i++) {
             buf[i] = x[i];
         }
         for (int i = 0; i < ylen; i++) {
             buf[i + (int) xlen] = y.getData()[i];
         }
+
+        // Create output hash
         byte[] buffer = new byte[buf.length];
         for (int i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) (buf[i] & 0xFF);
@@ -70,7 +73,7 @@ public class HMAC {
         return SHA256.sha256(new Block(buffer.length, buffer));
     }
 
-    public static Block encode(Block value, Block key) {
+    public Block encode(Block value, Block key) {
         return hmacSha256(key, value);
     }
 }

@@ -10,4 +10,12 @@ public class DoubleRatchetMessage {
         this.data = data;
         this.header = header;
     }
+
+    public Block getData() {
+        return data;
+    }
+
+    public DoubleRatchetMessageHeader getHeader() {
+        return header;
+    }
 }

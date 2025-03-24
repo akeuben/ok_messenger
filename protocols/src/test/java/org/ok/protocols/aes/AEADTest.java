@@ -84,10 +84,9 @@ public class AEADTest {
             Block AD = Block.fromHexString("44116f1a6af9c79c44116f1a6af9c79c");
 
             AESKey key = AESKey.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
-            AEAD aead = new AEAD();
 
-            Block encrypted = aead.encrypt(msg, key, AD);
-            Block decrypted = aead.decrypt(encrypted, key, AD);
+            Block encrypted = AEAD.encrypt(msg, key, AD);
+            Block decrypted = AEAD.decrypt(encrypted, key, AD);
 
             assertEquals(msg, decrypted);
         }

@@ -6,8 +6,7 @@ public class AES256 extends AES {
 
     private static final int h = 14;
 
-    @Override
-    public Block encrypt(Block block, AESKey key) {
+    public static Block encrypt(Block block, AESKey key) {
         assert key.getSizeBits() == 256;
         assert block.getSizeBits() == 128;
 
@@ -27,8 +26,7 @@ public class AES256 extends AES {
         return state;
     }
 
-    @Override
-    public Block decrypt(Block block, AESKey key) {
+    public static Block decrypt(Block block, AESKey key) {
         assert key.getSizeBits() == 256;
         assert block.getSizeBits() == 128;
 

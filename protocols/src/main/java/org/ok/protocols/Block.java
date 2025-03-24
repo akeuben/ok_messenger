@@ -1,11 +1,12 @@
 package org.ok.protocols;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class Block {
+public class Block implements Serializable {
     private final byte[] data;
     private int size;
 

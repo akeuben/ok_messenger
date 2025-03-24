@@ -13,13 +13,13 @@ public class X3DHTest {
 
     @Test
     public void test() {
-        Curve25519KeyPair aliceKeys = curve.generateKeyPair();
-        Curve25519KeyPair bobKeys = curve.generateKeyPair();
+        X3DHKeyPair aliceKeys = new X3DHKeyPair(curve.generateKeyPair());
+        X3DHKeyPair bobKeys = new X3DHKeyPair(curve.generateKeyPair());
 
         for(int i = 0; i < 100; i++) {
 
-            Curve25519KeyPair bobSignedPrekey = curve.generateKeyPair();
-            Curve25519KeyPair bobOneTimePrekey = curve.generateKeyPair();
+            X3DHKeyPair bobSignedPrekey = new X3DHKeyPair(curve.generateKeyPair());
+            X3DHKeyPair bobOneTimePrekey = new X3DHKeyPair(curve.generateKeyPair());
 
             PrekeyBundle bobPrekeyBundle = X3DH.createPrekeyBundle(bobKeys, bobSignedPrekey, bobOneTimePrekey);
 

@@ -16,20 +16,20 @@ public class X3DH {
         return new Block(curve.calculateSignature(privateKey, publicKeyToSign));
     }
 
-    public static PrekeyBundle createPrekeyBundle(Curve25519KeyPair keyPair, Curve25519KeyPair preKeyPair) {
+    public static PrekeyBundle createPrekeyBundle(X3DHKeyPair keyPair, X3DHKeyPair preKeyPair) {
         Block signedPreKey = new Block(preKeyPair.getPublicKey());
         Block prekeySignature = signPrekey(keyPair.getPrivateKey(), signedPreKey.getData());
         return new PrekeyBundle(new Block(keyPair.getPublicKey()), signedPreKey, prekeySignature);
     }
 
-    public static PrekeyBundle createPrekeyBundle(Curve25519KeyPair keyPair, Curve25519KeyPair preKeyPair, Curve25519KeyPair oneTimeKey) {
+    public static PrekeyBundle createPrekeyBundle(X3DHKeyPair keyPair, X3DHKeyPair preKeyPair, X3DHKeyPair oneTimeKey) {
         Block signedPreKey = new Block(preKeyPair.getPublicKey());
         Block prekeySignature = signPrekey(keyPair.getPrivateKey(), signedPreKey.getData());
         return new PrekeyBundle(new Block(keyPair.getPublicKey()), signedPreKey, prekeySignature, new Block(oneTimeKey.getPublicKey()));
     }
 
-    public static X3DHResult runSend(PrekeyBundle prekeyBundle, Curve25519KeyPair keyPair) {
-        Curve25519KeyPair ephemeralKey = curve.generateKeyPair();
+    public static X3DHResult runSend(PrekeyBundle prekeyBundle, X3DHKeyPair keyPair) {
+        X3DHKeyPair ephemeralKey = new X3DHKeyPair(curve.generateKeyPair());
 
         if(!curve.verifySignature(
                 prekeyBundle.getIdentityKey().getData(),
@@ -57,7 +57,7 @@ public class X3DH {
         }
     }
 
-    public static X3DHResult runReceive(Curve25519KeyPair identityKey, Curve25519KeyPair signedPrekey, Curve25519KeyPair oneTimePrekey, X3DHMessage message) {
+    public static X3DHResult runReceive(X3DHKeyPair identityKey, X3DHKeyPair signedPrekey, X3DHKeyPair oneTimePrekey, X3DHMessage message) {
         byte[] ephemeralKey = message.getEmphemeralKey().getData();
         Block AD = Block.concat(message.getIdentityKey(), new Block(identityKey.getPublicKey()));
 

@@ -6,6 +6,10 @@ import org.ok.app.ClientManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.RenderingHints.Key;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class CurrentChat extends JPanel {
     public Chat getChat() {
@@ -13,6 +17,8 @@ public class CurrentChat extends JPanel {
     }
 
     private Chat chat;
+
+    JTextField messageField = new JTextField();
 
     public CurrentChat(Chat chat) {
         super();
@@ -33,7 +39,7 @@ public class CurrentChat extends JPanel {
         c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
 
-        if(chat == null) {
+        if (chat == null) {
             add(new JLabel("Click a chat to get started!"), c);
             return;
         }
@@ -46,7 +52,7 @@ public class CurrentChat extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
 
-        JTextField messageField = new JTextField();
+        messageField = new JTextField();
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = 1;
@@ -63,6 +69,24 @@ public class CurrentChat extends JPanel {
         sendButton.addActionListener(e -> {
             chat.sendMessage(messageField.getText(), ClientManager.get());
         });
+        messageField.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    chat.sendMessage(messageField.getText(), ClientManager.get());
+                }
+            }
+
+        });
 
         panel.add(sendButton, c);
 
@@ -72,7 +96,7 @@ public class CurrentChat extends JPanel {
         c.weighty = 0;
         c.fill = GridBagConstraints.HORIZONTAL;
         add(panel, c);
+        setFocusable(true);
     }
-
 
 }

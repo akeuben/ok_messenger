@@ -11,13 +11,12 @@ public class HMAC {
     private static final int SHA256_HASH_SIZE = 32;
     private static final int BLOCK_SIZE = 64;
 
-    private static Block hmacSha256(Block key, Block data) {
+    private static Block hmacSha256(Block data, Block key) {
         int[] k = new int[BLOCK_SIZE];
         int[] kIpad = new int[BLOCK_SIZE];
         int[] kOpad = new int[BLOCK_SIZE];
         Block ihash = new Block(SHA256_HASH_SIZE);
         Block ohash = new Block(SHA256_HASH_SIZE);
-        int keylen = key.getSizeBytes();
         int datalen = data.getSizeBytes();
         int i;
         for (i = 0; i < k.length; i++) {
@@ -30,12 +29,15 @@ public class HMAC {
             kOpad[i] = 0x5c;
         }
 
-        if (keylen > BLOCK_SIZE) {
+        if (key.getSizeBytes() > BLOCK_SIZE) {
             // If the key is larger than the hash algorithm's
             // block size, we must digest it first.
-            Block out = SHA256.sha256(key);
+            key = SHA256.sha256(key);
+            for (i = 0; i < key.getSizeBytes(); i++) {
+                k[i] = (byte) key.getData()[i];
+            }
         } else {
-            for (i = 0; i < keylen; i++) {
+            for (i = 0; i < key.getSizeBytes(); i++) {
                 k[i] = (byte) key.getData()[i];
             }
         }
@@ -74,6 +76,6 @@ public class HMAC {
     }
 
     public static Block encode(Block value, Block key) {
-        return hmacSha256(key, value);
+        return hmacSha256(value, key);
     }
 }

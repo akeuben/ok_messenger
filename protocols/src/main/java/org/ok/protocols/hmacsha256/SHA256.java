@@ -188,7 +188,6 @@ public class SHA256 {
         context.state[5] = 0x9B05688CL;
         context.state[6] = 0x1F83D9ABL;
         context.state[7] = 0x5BE0CD19L;
-
     }
 
     private static void sha256update(Sha256Context context, byte[] buf, long bufferSize) {

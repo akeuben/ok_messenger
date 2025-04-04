@@ -1,1 +1,24 @@
-\textbf{Def:} Future output keys appear random to an adversary who learns the KDF key at some point in time, provided that future inputs have added sufficient entropy.
+In order to provide break-in recovery, Double Ratchet introduces two new ratchets, the Diffie-Hellman ratchet 
+and the root key chain. These systems are in place to occationally recreate the sending and receiving ratchets 
+so even if an attacker manages to steal one key, once the sending/receiving ratchet is reset they won't be able 
+to derive future keys, as the next sending/receiving key is not related to the key they have stolen. We will explore this in more detail:
+
+\textbf{The DH Ratchet}
+
+The Diffie-Hellman ratchet is built upon the Diffie-Hellman algorithm. Bob and alice continously generate new 
+public/private key pairs. They send their public key to the other party, and upon reception of they key, they can derive 
+a new shared secret. This secret is used in the root key chain to generate the keys for the sending/receiving ratchets.
+
+Suppose bob wants to establish a new sending/receiving chain. He generates 
+a new Public/Private key pair. He sends his public key to Alice. Alice does the same, and also generates a new public/private 
+key pair. Alice sends her new public key to bob. They can then both use Diffie-Hellman on their private key and the other party's public key 
+to generate a shared secret. This shared secret is used to generate Alice's sending chain key and bob's receiving chain key. This process 
+repeates as long as Alice and Bob keep sending messages.
+
+\textbf{The Root Key Chain}
+
+The output from Alice's DH calculation above becomes the input (along with the root key chain) to generate Alice's 
+sending ratchet key (resetting the ratchet). Then, Bob will compute the same shared secret, and this will be the input (along with the root key chain)
+to generate Bob's receiving chain. As the root key chain is in sync between the two parties (initialized with the same shared secret),
+then we have established the desired property of Alice's sending chain being equal to Bob's receiving chain, and vice-versa.
+We can then ratchet the sending and receiving ratchet as normal to generate keys for individual encryptions and decryptions.

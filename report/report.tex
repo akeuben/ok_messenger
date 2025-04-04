@@ -22,29 +22,13 @@
 \subsection{Mode Of Operation}
 \input{./AES-256/mode.tex}
 
-\subsection{AEAD}
-\input{./AES-256/aead.tex}
-
-\section{SHA-256}
 \input{./SHA-256/main.tex}
-
-\subsection{Implementation}
-\input{./SHA-256/implementation.tex}
-
-\subsection{HMAC SHA-256}
-\input{./SHA-256/HMAC/main.tex}
-
-\subsubsection{Use as a KDF}
-\input{./SHA-256/HMAC/kdf.tex}
-
-\subsection{HKDF}
+\input{./SHA-256/hmac.tex}
 \input{./SHA-256/hkdf.tex}
+\input{./SHA-256/kdf.tex}
 
 \section{Double Ratchet}
 \input{./DoubleRatchet/main.tex}
-
-\subsection{Implementation}
-\input{./DoubleRatchet/implementation.tex}
 
 \subsection{Effectiveness}
 \input{./DoubleRatchet/effectiveness/main.tex}
@@ -54,6 +38,9 @@
 
 \subsubsection{Break-in Recovery}
 \input{./DoubleRatchet/effectiveness/break-in-recovery.tex}
+
+\subsection{Implementation}
+\input{./DoubleRatchet/implementation.tex}
 
 \section{X3DH - Triple-extended Diffie-Hellman}
 \input{./X3DH/main.tex}

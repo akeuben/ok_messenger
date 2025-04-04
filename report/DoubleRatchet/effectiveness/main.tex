@@ -1,0 +1,12 @@
+The effectiveness follows from two key properties of Double Ratchet: 
+forward secrecy and break-in recovery.
+
+\textbf{Definition (Forward Secrecy):} If an attacker manages to steal a key, they won't be able to 
+retrieve old keys or decrypt previous messages.
+
+\textbf{Definition (Break-in Recovery):} If an attacker manages to steal a key, they won't be able to 
+retrieve future keys or decrypt later messages.
+
+Double ratchet has these properties, as will be described below. As such, as a new key is generated 
+for every message, even if a key were to be stolen, that key would only work on one message, providing great 
+security to the users and the system, demonstrating the effectiveness of the protocol.

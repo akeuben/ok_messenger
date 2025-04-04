@@ -1,1 +1,8 @@
-\textbf{Def:} Output keys from the past appear random to an adversary who learns the KDF key at some point in time.
+As double ratchet is built off of KDF chains, to derive the next key, the current chain key goes through 
+a key derivation function to generate the message key and a new chain key (used to derive future keys).
+
+As the key derivation functions we are using are hash-based (HMAC and HKDF) and use SHA256, the preimage 
+resistance property prevents an attacker from discovering the previous key. Suppose that an attacker knows 
+key $k_n$. Then, in order to the previous key $k_{n-1}$ where $k_n=H(k_{n-1})$, the attacker would need to find 
+the preimage of $k_n$ in $H$. Thus, as SHA-256 is preimage resistant, an attacker won't be able to derive previous 
+keys from the current key, providing forward secrecy.

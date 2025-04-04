@@ -1,0 +1,14 @@
+Double ratchet is the core key generation algorithm used within the signal protocol.
+The idea is that every message is sent with a new key, so even if an attacker manages 
+to steal an encyrption/decryption key and read one message, they won't be able to read 
+any other messages. 
+
+The core idea is that Alice and Bob have two core ratchets each, a sending ratchet and a 
+receving ratchet. If alice sends a message to bob, she will perform a ratchet step on her sending 
+ratchet to get a key $k$ to encrypt the message with. Bob, upon reception of the message will perform 
+a ratchet step on his receving ratchet to get the same key $k$. The core idea here is that each party's 
+sending ratchet is linked to the other party's receiving ratchet, and vice-versa.
+
+In this section, we will discuss the implementation and efficiveness of 
+the Double Ratchet algorithm, including how desired security properties of double ratchet are 
+achieved by expanding upon the two ratchets as described above.

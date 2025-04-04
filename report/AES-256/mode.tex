@@ -1,0 +1,48 @@
+We are using the CBC mode of operation. This is because it ensures that 
+the same plaintext does not encrypt to the same ciphertext, even within the same 
+message, providing additional security against frequency analysis. Further,
+this is a mode of operation that was covered in class, so we ere more familiar with it. 
+Finally, this is also the recommended mode of operation for use in the Double Ratchet algorithm,
+which is the target use case for this implementation.
+
+We made use of pkcs7 padding to ensure the final block is the correct size. This padding sets the last byte 
+to the number of padding bytes so that it is easy to remove the padding upon reception of the message. This does 
+create the possibility of adding an additional block if the original message was already block-aligned, potentially doubling the 
+message size for short messages. If data transmission is a concern, then another padding scheme could be looked into.
+
+As for implementation, it closely follows the algorithm discussed in class:
+
+\begin{lstlisting}[language=Java]
+public class AES256CBC {
+    public Block encrypt(Block plaintext_unpadded, Block iv, AESKey key) {
+        int blockSize = 16;
+        Block plaintext = plaintext_unpadded.pkcs7Pad(16);
+        int numBlocks = plaintext.getSizeBytes() / blockSize;
+
+        Block[] blocks = new Block[numBlocks + 1];
+        blocks[0] = iv;
+
+        for(int i = 1; i <= numBlocks; i++) {
+            int start = (i - 1) * blockSize;
+            int end = start + blockSize;
+            blocks[i] = aes.encrypt(plaintext.subData(start, end).xor(blocks[i-1]), key);
+        }
+
+        return Block.concat(blocks);
+    }
+
+    public Block decrypt(Block ciphertext, AESKey key) {
+        int blockSize = 16;
+        int numBlocks = ciphertext.getSizeBytes()/blockSize - 1;
+
+        Block[] decrypted = new Block[numBlocks];
+        for(int i = 0; i < numBlocks; i++) {
+            Block thisBlock = ciphertext.subData((i + 1) * blockSize, (i + 2) * blockSize);
+            Block prevBlock = ciphertext.subData(i * blockSize, (i + 1) * blockSize);
+            decrypted[i] = aes.decrypt(thisBlock, key).xor(prevBlock);
+        }
+
+        return Block.concat(decrypted).pkcs7Unpad(blockSize);
+    }
+}
+\end{lstlisting}

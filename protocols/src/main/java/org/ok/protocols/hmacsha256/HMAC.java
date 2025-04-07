@@ -17,7 +17,7 @@ public class HMAC {
         int[] kOpad = new int[BLOCK_SIZE];
         Block ihash = new Block(SHA256_HASH_SIZE);
         Block ohash = new Block(SHA256_HASH_SIZE);
-        int datalen = data.getSizeBytes();
+        
         int i;
         for (i = 0; i < k.length; i++) {
             k[i] = 0;
@@ -49,7 +49,7 @@ public class HMAC {
 
         // Perform HMAC algorithm: ( https://tools.ietf.org/html/rfc2104 )
         // `H(K XOR opad, H(K XOR ipad, data))`
-        ihash = H(kIpad, kIpad.length, data, datalen, ihash.getSizeBytes());
+        ihash = H(kIpad, kIpad.length, data, data.getSizeBytes(), ihash.getSizeBytes());
         ohash = H(kOpad, kOpad.length, ihash, ihash.getSizeBytes(), ohash.getSizeBytes());
 
         return ohash;

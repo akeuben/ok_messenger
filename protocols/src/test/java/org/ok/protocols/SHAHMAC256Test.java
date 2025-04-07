@@ -5,7 +5,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SHA256Test {
+public class SHAHMAC256Test {
+
+    @Test
+    void testSHA256Empty() {
+        Block msg = new Block("");
+
+        Block expected = Block.fromHexString("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+
+        assertEquals(expected, SHA256.sha256(msg));
+    }
 
     @Test
     void testSHA256() {
@@ -18,16 +27,23 @@ public class SHA256Test {
     }
 
     @Test
-    void testHMAC256() {
+    void testHMAC256SuperLongKey() {
         Block msg = new Block("This is a test");
 
         Block key = new Block(
                 "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 
         Block expected = Block.fromHexString("28719ace8a5a706faf0cea918d8d496a9d5fe8363311c95a1172ed556424a328");
-        // Block expected =
-        // Block.fromHexString("c11a3be6b35866216b73b8f13ebc97cba97966d3096a547d7133d617daa5c91c");
+        assertEquals(expected, HMAC.encode(msg, key));
+    }
 
+    @Test
+    void testHMAC256ShortKey() {
+        Block msg = new Block("This is a test");
+
+        Block key = new Block("123");
+
+        Block expected = Block.fromHexString("3b22e18d36a6ea8fa7d87351b520d7493b54e1f89fad9c64268e753ecca5ad65");
         assertEquals(expected, HMAC.encode(msg, key));
     }
 }

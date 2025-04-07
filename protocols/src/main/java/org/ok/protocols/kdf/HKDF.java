@@ -41,7 +41,7 @@ public class HKDF {
     }
 
     public static Block hkdf(Block salt, Block ikm, Block info, int length) {
-        byte[] prk = hkdfExtract(salt.getData(), ikm.getData());
+        byte[] prk = hkdfExtract(salt.getData(), ikm.getData()); // Pseudorandom key
         byte[] temp = hkdfExpand(prk, info.getData(), length);
         return new Block(temp.length, temp);
     }

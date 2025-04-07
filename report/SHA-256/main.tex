@@ -1,1 +1,22 @@
-\section{SHA-256}
+Our SHA-256 implementation in Java uses no external libraries. It unwraps a $Block$ and rewraps the result into a $Block$ because of the complex operations used on the input.
+In our implementation we used two sets of constants; round constants $k$, and initializing constants $h$.
+%cite github
+These constants are used in most of the other existing SHA-256 implementations, and have not been proven to be unsecure, hence we have chosen them for our implementation.
+
+Without the use of external libraries, and because Java does not naturally support unsigned values masking and casting are used often to ensure the hash algorithm works correctly. This does lead to hard-to-read code, but it ensures that when we are shifting, rotating or storing the values, the bits are in the correct orientation which is important not only in helping with our understanding of how SHA-256 operates but how the results will drastically change if one bit is misplaced. During our testing phase, without using the $0xFFFFFFFFL$ mask, our results would occasionally match the correct output, but more often than not, would return an incorrect value. As a result, we decided to mask the stored value to ensure we know exactly where each bit is stored.
+%Cite github
+\begin{lstlisting}[language=Java]
+private static long[] sha256round(long[] S, int i, long[] W) {
+    long t0 = ((((((((((S[7] & 0xFFFFFFFFL) + (sigma1(S[4] & 0xFFFFFFFFL) 
+        0xFFFFFFFFL)) & 0xFFFFFFFFL) + (choose(S[4] & 0xFFFFFFFFL, S[5] & 
+        0xFFFFFFFFL, S[6] & 0xFFFFFFFFL) & 0xFFFFFFFFL)) & 0xFFFFFFFFL) + 
+        (K[i] & 0xFFFFFFFFL)) & 0xFFFFFFFFL) + (W[i] & 0xFFFFFFFFL)) & 
+        0xFFFFFFFFL)) & 0xFFFFFFFFL;
+    long t1 = ((sigma0(S[0] & 0xFFFFFFFFL) & 0xFFFFFFFFL) + (majority(S[0] & 
+        0xFFFFFFFFL, S[1] & 0xFFFFFFFFL, S[2] & 0xFFFFFFFFL) & 0xFFFFFFFFL)) & 
+        0xFFFFFFFFL;
+    S[3] += t0 & 0xFFFFFFFFL;
+    S[7] = ((t0 & 0xFFFFFFFFL) + (t1 & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
+    return S;
+}
+\end{lstlisting}

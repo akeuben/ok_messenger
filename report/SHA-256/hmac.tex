@@ -1,0 +1,10 @@
+No external libraries are used in our HMAC implementation, which uses \textit{0x36} for the \textit{ipad} and \textit{0x5c} for the \textit{opad} with SHA-256 as the hash algorithm. Unlike our SHA-256 implementation, our HMAC does not unwrap the $Block$'s for the key or input, instead it passes it directly into our $H$ function, since SHA-256 does the unwrapping. Compared to our SHA-256, HMAC was significantly easier to implement, since most of the calculations are done in SHA-256. 
+Our HMAC consists of manipulating the $key$ and $data$ along with these local variables:
+\begin{lstlisting}[language=Java]
+int[] k = new int[BLOCK_SIZE];
+int[] kIpad = new int[BLOCK_SIZE];
+int[] kOpad = new int[BLOCK_SIZE];
+Block ihash = new Block(SHA256_HASH_SIZE);
+Block ohash = new Block(SHA256_HASH_SIZE);
+\end{lstlisting}
+A technicality similar to our SHA-256 implementation is casting between Java's integer and byte data types to ensure the final digest is correct.

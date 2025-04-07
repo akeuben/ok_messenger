@@ -1,0 +1,25 @@
+Our HKDF uses our HMAC implementation to derive keys, also implemented without external libraries. The \textit{main} function for our HKDF implementation is:
+\begin{lstlisting}[language=Java]
+public static Block hkdf(Block salt, Block ikm, Block info, int length) {
+    byte[] prk = hkdfExtract(salt.getData(), ikm.getData()); // Pseudorandom key
+    byte[] temp = hkdfExpand(prk, info.getData(), length);
+    return new Block(temp.length, temp);
+}
+\end{lstlisting}
+Where \textit{hkdfExtract} uses our HMAC-SHA256 implementation to generate the initial digest and \textit{hkdfExpand} ensures it matches the length of bytes we want for the final output. Within our \textit{hkdfExpand} function, we use this implementation for concatenating digests together to get the length necessary for the final digest.
+\begin{lstlisting}[language=Java]
+private byte[] concat(byte[]... arrays) {
+    int totalLength = 0;
+    for (byte[] array : arrays) {
+        totalLength += array.length;
+    }
+    byte[] result = new byte[totalLength];
+    int currentIndex = 0;
+    for (byte[] array : arrays) {
+        System.arraycopy(array, 0, result, currentIndex, array.length);
+        currentIndex += array.length;
+    }
+    return result;
+}
+\end{lstlisting}
+

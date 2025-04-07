@@ -86,4 +86,36 @@ public class DoubleRatchetTest {
         assertEquals(new Block("Hello, Alice"), plzWork);
     }
 
+    @Test
+    void TestOutOfOrderMessages() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+
+        Block SK = Block.fromHexString("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
+        KeyPair bobKeyPair = DiffieHellman.GenerateKeyPair();
+
+        System.out.println("Bob Key Pair" + new Block(bobKeyPair.getPublic()));
+
+        DoubleRatchet bob = new DoubleRatchet(SK, bobKeyPair);
+        DoubleRatchet alice = new DoubleRatchet(SK, bobKeyPair.getPublic());
+
+        Block AD = Block.fromHexString("44116f1a6af9c79c123B8A12");
+
+        DoubleRatchetMessage c1 = alice.encrypt(new Block("Hello, World 1"), AD);
+        DoubleRatchetMessage c2 = alice.encrypt(new Block("Hello, World 2"), AD);
+
+        Block m2 = bob.decrypt(c2, AD);
+        Block m1 = bob.decrypt(c1, AD);
+
+        assertEquals(new Block("Hello, World 1"), m1);
+        assertEquals(new Block("Hello, World 2"), m2);
+
+        DoubleRatchetMessage c3 = alice.encrypt(new Block("Hello, World 1"), AD);
+        DoubleRatchetMessage c4 = alice.encrypt(new Block("Hello, World 2"), AD);
+
+        Block m3 = bob.decrypt(c3, AD);
+        Block m4 = bob.decrypt(c4, AD);
+
+        assertEquals(new Block("Hello, World 1"), m3);
+        assertEquals(new Block("Hello, World 2"), m4);
+    }
+
 }

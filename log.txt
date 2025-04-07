@@ -1,0 +1,304 @@
+commit b8ecfa887c434bc3d13c41741400af76f55b3966
+Merge: c963793 0b579e1
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Fri Mar 21 12:35:40 2025 -0600
+
+    Merge branch 'server' of https://github.com/akeuben/CPSC-418-Project into server
+
+commit c963793078b014cfdf752740a760ce07a296082a
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Fri Mar 21 12:35:11 2025 -0600
+
+    Static
+
+commit 0b579e1e98e6ac260a40a1f010f2a27e5629b09a
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Mar 21 12:28:15 2025 -0600
+
+    Fixed a couple crashes
+
+commit dc0e25e3c08357fadce4c1d70c2d026321117835
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Fri Mar 21 12:13:42 2025 -0600
+
+    Comments and removed static
+
+commit a8359c264304477e8573424b71a4d0be3ca007b6
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Mar 21 10:44:55 2025 -0600
+
+    ITS WORKING
+
+commit dd6ab98dcff1ea4222820a5f262f770fe9faf288
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Mar 21 04:19:34 2025 -0600
+
+    Currently broken
+
+commit 925f3ed770f6678f1fc9a1265f52f8ab294e1bea
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Mon Mar 17 15:52:33 2025 -0600
+
+    Workingish stuf
+
+commit 6d871dd794f3eb3d07cd51b655a463eefb3d2fbd
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Mon Mar 17 14:35:36 2025 -0600
+
+    Server progress
+
+commit 53159d33e96b1ea85b75a65a542feca9bf435f3b
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Mar 14 12:01:49 2025 -0600
+
+    Improved GF256 calculations
+
+commit 6735818686fb4893a38b7e11db057b93c8b51490
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Mon Mar 10 13:02:39 2025 -0600
+
+    Add most needed packets and tests
+
+commit 69427651cbe9df870eebe3c145cba0608f5a748d
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Mar 7 14:29:21 2025 -0700
+
+    Add first few packets
+
+commit 7bb2e7e82f09ca249db31e48ba471b75c2ff2f24
+Merge: 3ec0ba0 7b7364d
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Mar 7 13:17:40 2025 -0700
+
+    Merge branch 'main' into server
+
+commit 7b7364d412ebd152cefb49eba72046a497c797fc
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Thu Mar 6 14:54:26 2025 -0700
+
+    Fixed integration hell
+
+commit 721016cb41ab5092f23daa72cb0f64af27e8b4ec
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Thu Mar 6 14:44:30 2025 -0700
+
+    Add X3DH
+
+commit f33cb466ba1627d84c1eb3126553e298d78ff8df
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Thu Mar 6 21:34:32 2025 -0700
+
+    comments
+
+commit bdcdd044b502deaa0cf8c8235caa34b24fe53911
+Merge: baaafe9 c3a6433
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Thu Mar 6 14:25:50 2025 -0700
+
+    Merge pull request #6 from akeuben/main2.0
+    
+    Main2.0
+
+commit c3a64335e21c2a129155988a05c2f952668a0cb4
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Thu Mar 6 21:25:19 2025 -0700
+
+    refactor
+
+commit d92a932930fb474cfa334913e792d6e71185722c
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Thu Mar 6 14:13:12 2025 -0700
+
+    d
+
+commit baaafe92ef102427d09651cb2cb07445933144e8
+Merge: f498303 71c3586
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Wed Mar 5 19:10:57 2025 -0700
+
+    Merge pull request #4 from akeuben/double_ratchet
+    
+    double ratchet
+
+commit 71c35861e7fc94dea7785a29da065ce844b13775
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Wed Mar 5 19:10:18 2025 -0700
+
+    Fully working double ratchet. Oh yea!
+
+commit d539a162b0f1cf1637d8917dba1163a4f8da4e0f
+Merge: 781e033 f498303
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Wed Mar 5 16:07:55 2025 -0700
+
+    Merge branch 'main' into double_ratchet
+
+commit 781e033cf176b089531953009b9a1d61c60caab8
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Wed Mar 5 16:07:27 2025 -0700
+
+    Add nix
+
+commit f498303a12c57b380fcc39fd99d36fa1751b685e
+Merge: 886111c e3eb4ca
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Wed Mar 5 16:07:04 2025 -0700
+
+    Merge pull request #3 from akeuben/cxjavaSha
+    
+    Cxjava sha
+
+commit e3eb4caf385f1b9aafff12b4cc72c514858c206a
+Merge: 83aa7cb 886111c
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Wed Mar 5 16:06:55 2025 -0700
+
+    Merge branch 'main' into cxjavaSha
+
+commit 83aa7cba30cd0c7c7030eada0ada2bc147edff54
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Wed Mar 5 14:46:26 2025 -0700
+
+    other kdf functions created
+
+commit 3ec0ba0c6ec531511879d4ede6c1f9f7007abfe7
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Wed Mar 5 14:08:27 2025 -0700
+
+    Add nix flake
+
+commit 2ae66dc74a47c4b1ce6fa81c770a3e536b1628dd
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Wed Mar 5 11:40:08 2025 -0700
+
+    HDKF done
+
+commit 1093328c6bb2b11754d9003f77d6268b73eb4408
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Tue Mar 4 14:49:57 2025 -0700
+
+    WONT COMPILE: Double Ratchet without KDF
+
+commit 8b5287bfba960db69432db311e413ce18d305b6f
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Tue Mar 4 13:46:59 2025 -0700
+
+    Attempt at HKDF
+
+commit e8a0de8b509a203428f169f6b162a1ad3761604d
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Tue Mar 4 12:58:07 2025 -0700
+
+    light refactoring
+
+commit fca3c419a02f286a62dff6441c3c62f335d79154
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Tue Mar 4 12:44:23 2025 -0700
+
+    SHA256 done
+
+commit a8d4bf90ffa90d6ec98658acdd2d52426321b799
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Tue Mar 4 12:37:21 2025 -0700
+
+    Start client and server
+
+commit ab131577af367d5937fbcb1fe1b33dccbc98d04f
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Sun Feb 23 21:14:27 2025 -0700
+
+    Added C version of H-SHA256
+
+commit 8b00b0ac02ca8b0fd6a5a9671409be268e4b3301
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Sun Feb 23 21:11:58 2025 -0700
+
+    HMAC and SHA256 have been separated to their separate classes
+
+commit 886111cee44f6d0fb64cd63cd2a4d19bb17a97a3
+Merge: 8bf6cc5 2e4b701
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Sun Feb 23 20:42:21 2025 -0700
+
+    Merge pull request #2 from akeuben/aes
+    
+    Aes
+
+commit 2e4b701f9a43d9a5e4111de290890051fcd9d958
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Sun Feb 23 20:36:51 2025 -0700
+
+    Finish AES
+
+commit 64c0aeb3ea9b8c48fc7cd0b38b0417fc17bee606
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Thu Feb 20 20:21:17 2025 -0700
+
+    Usable with Block encode
+    
+    HMAC working without library.
+    SHA256 uses library.
+
+commit b50a41758f1fe293df4955f41707c1f2ea311709
+Author: joshua995 <joshua.liu995@gmail.com>
+Date:   Thu Feb 20 14:07:17 2025 -0700
+
+    HMAC works, SHA256 uses library
+
+commit c139234aa5e6fcda73b15a1a702b98f39dc472d5
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Wed Feb 19 11:00:50 2025 -0700
+
+    not quite working
+
+commit 3694364af273f2007d62532f89007507e24d8820
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Tue Feb 18 14:13:57 2025 -0700
+
+    attempt 1 at hmacsha
+
+commit 82beb37a2f472766890b586dda7459d09ab910af
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Fri Feb 14 12:46:44 2025 -0700
+
+    Update HMAC256.java
+
+commit 1748401728a4b9771a55ed087e8c99d8b9839faf
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Mon Feb 10 15:27:57 2025 -0700
+
+    Initial AES implementation. Does not work yet, but is a WIP.
+    
+    TODO:
+    - Implement AES Key Scheduler
+    - Hook together each step of the AES encryption.
+
+commit 6542eb0887b484cec8b7ed720bfb9ca1642af4be
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Mon Feb 10 14:46:02 2025 -0700
+
+    Update HMAC256.java
+
+commit fb3937ca930920faf68bef82c5628b1b40b95b5b
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Mon Feb 10 14:41:17 2025 -0700
+
+    added constants
+
+commit 85b1e682545892b19e4378fe5535c3c9ce35895d
+Author: joshua995 <114888100+joshua995@users.noreply.github.com>
+Date:   Fri Feb 7 12:49:28 2025 -0700
+
+    hmac test created
+
+commit 8bf6cc59d95ab69c1ced6e157b85303a104d9312
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Feb 7 12:02:55 2025 -0700
+
+    Initialize gradle project
+
+commit 415c322ee8935a7b4d5ae266ac060b04f71a4181
+Author: Avery Keuben <avery1516@gmail.com>
+Date:   Fri Jan 24 12:11:19 2025 -0700
+
+    Initial commit

@@ -13,9 +13,9 @@ securely to other clients through the server.
 
 Our original proposal had us reimplementing X3DH, Double Ratchet, and HMAC-SHA256. We implemented all of these protocols
 including the underlying algorithms such as: SHA-256, AES-256, AES-256CBC, and AEAD (using AES-256CBC). 
-Our original proposal also said that we were to implement the Seseme session management protocol, but due to time restrictions,
-and after gaining a greater understanding of the algorithms within Signal, we decided to not implement Seseme.
-The goal of Seseme is to manage client sessions including multiple devices and group chats. We decided that this was too ambitious 
+Our original proposal also said that we were to implement the Sesame session management protocol, but due to time restrictions,
+and after gaining a greater understanding of the algorithms within Signal, we decided to not implement Sesame.
+The goal of Sesame is to manage client sessions including multiple devices and group chats. We decided that this was too ambitious 
 given the time we had to complete this project, so we dropped that protocol in favour of a simplier server implementation.
 
 The implementation of all algorithms in the protocol was evenly divided between the computer science members of the group (Avery and Joshua),
@@ -26,4 +26,4 @@ of the Java programming language and Junit for unit testing.
 
 As for the technical aspects of the system, everything was programmed in the Java programming language with Junit for unit testing of 
 individual cryptographic systems. To facilitate communication between the client and server, we used a Websocket library for java,
-allowing for an easily to implement and use persistant communication system.
+allowing for an easy to implement and use persistant communication system.

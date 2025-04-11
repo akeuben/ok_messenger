@@ -1,0 +1,6 @@
+For our implementation of X3DH, we work with x25519, which works with the elliptic curve 
+$$
+ y^2 = x^3 + 486662x^2 + x \mod 2^{255}-19
+$$
+with the base point P=(9,147816...401) (the y-coordinate is unimportant for the key-exchange) and order \( \{2^{252} + 277423...493 \} \).
+Our implementation of X3DH allows for the use of one-time prekeys, however due to time constraints, we did not implement this functionality within the server. It should be noted that this is a trivial function that can be easily added in the future as the rest of our implementation supports the use of one-time prekeys. As the focus of our project was on the cryptographic principles of the algorithms used in the Signal protocol, it was not necessary to implement this functionality.

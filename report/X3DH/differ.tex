@@ -1,0 +1,51 @@
+Rather than relying on only one key exchange and one private key that's used to calculate the shared key, X3DH computes three (four if a one-time key is used) separate DH exchanges, with Alice creating two public keys and Bob creating his own two (three if a one-time key is used) public keys. This is to provide forward security and a built in way for both parties to mutually authenticate each other's identities.
+Alice's Keys:
+
+\[
+\text{IK}_A = aP \text{ (where \( a \) is Alice's private identity key.)}
+\]
+
+
+\[
+\text{EK}_A = a'P \text{ (where \( a' \) is a one-time ephemeral private key.)}
+\]
+
+
+Bob's Keys:
+
+\[
+\text{IK}_B = bP \text{ (where \( b \) is Bob's private identity key.)}
+\]
+
+
+\[
+\text{SPK}_B = b'P \text{ (where \( b' \) is Bob's semi-long-term prekey.)}
+\]
+
+\[
+\text{OPK}_B = b''G \text{ (where \( OPK_B \) is only used if available).}
+\]
+Bob then uploads his public keys to the server, only needing to upload his identity key once and having to periodically upload new signed prekeys and one-time prekeys.
+
+Alice downloads this information, containing computes the following Diffie-Hellman exchanges:
+
+$$
+DH_1 = \text{ECDH}(IK_A, \text{SPK}_B) 
+$$
+
+$$
+DH_2 = \text{ECDH}(EK_A, IK_B) 
+$$
+
+$$
+DH_3 = \text{ECDH}(EK_A, SPK_B) 
+$$
+
+$$
+DH_4 = \text{ECDH}(EK_A, OPK_B)   \text{ (if a one-time prekey is used)}
+$$
+and uses these to find the shared key 
+$$
+K = \text{HKDF}(DH_1||DH_2||DH_3||DH_4)   
+$$
+Alice then sends an initial message to Bob which involves her identity key, ephemeral key, and identifiers to specify which one of Bob's one-time prekeys she used. Bob uses the algorithm from above to recreate K, which he then can use to initialize the root chain. The biggest benefit to X3DH over regular ECDH comes from the addition of the server, which allows for asynchronous offline communication as both parties don't need to be online in order for the key exchange to take place. Additionally, as the identity keys are static, they can be used to verify the authenticity of the sender.

@@ -5,7 +5,7 @@ Double ratchet requires the following:
         For this, we chose to go with AES256 in CBC mode as it was taught in class
         and we were familiar with the conepts. Coincedentially, this is also the recommended 
         scheme by signal in their documentation. For the authentication, we make use of HMAC using 
-        our SHA256-HMAC implementation. THis was also recommended by the signal authors, but our core
+        our SHA256-HMAC implementation. This was also recommended by the signal authors, but our core
         reason for using SHA256 for HAMC was that we were already using it elsewhere in the application,
         and we were able to reuse it here as well. Further, SHA256 is industry standard, and gaining an 
         greater understanding of SHA256 was important to us, as the main goal of this project was to 
@@ -21,9 +21,11 @@ Double ratchet requires the following:
     \item Diffie-Hellman
 
         We are using the Java built-in Diffie-Hellman cryptographic libraries for our implementation.
-        As we are using SHA256, curve25519 provides ~128-bit security, matching our SHA implementation (SHA256).
+        For our Diffie-Hellman keys, we are using curve25519, which provides ~128-bit security matching our SHA implementation (SHA256).
         Further, the smaller key size (compared to the other recommended algorithm, Curve448) reduces communication
-        overhead which is already a problem with our implementation (which we will discuss later).
+        overhead which is already a problem with Double Ratchet. As there is much more information sent with each message in Double Ratchet 
+        when compared to a transitional encrypted messaging scheme, using this smaller key size, while maintaining the same security level of our 
+        application (128-bit) allows for our implementation to be more accessible to users who have limited bandwidth.
 \end{enumerate}
 
 As for implementation of the actual Double Ratchet algrorithm, we closely followed the documentation by signal.

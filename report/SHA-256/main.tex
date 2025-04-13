@@ -1,9 +1,9 @@
 Our SHA-256 implementation in Java uses no external libraries. It unwraps a $Block$ and rewraps the result into a $Block$ because of the complex operations used on the input.
-In our implementation we used two sets of constants; round constants $k$, and initializing constants $h$.
+In our implementation, we used two sets of constants; round constants $k$, and initializing constants $h$.
 %cite github
-These constants are used in most of the other existing SHA-256 implementations, and have not been proven to be unsecure, hence we have chosen them for our implementation.
+These constants are used in most of the other existing SHA-256 implementations and have not been proven to be insecure, hence we have chosen them for our implementation.
 
-Without the use of external libraries, and because Java does not naturally support unsigned values masking and casting are used often to ensure the hash algorithm works correctly. This does lead to hard-to-read code, but it ensures that when we are shifting, rotating or storing the values, the bits are in the correct orientation which is important not only in helping with our understanding of how SHA-256 operates but how the results will drastically change if one bit is misplaced. During our testing phase, without using the $0xFFFFFFFFL$ mask, our results would occasionally match the correct output, but more often than not, would return an incorrect value. As a result, we decided to mask the stored value to ensure we know exactly where each bit is stored.
+Without the use of external libraries, and because Java does not naturally support unsigned values masking and casting are used often to ensure the hash algorithm works correctly. This does lead to hard-to-read code, but it ensures that when we are shifting, rotating, or storing the values, the bits are in the correct orientation which is important not only in helping with our understanding of how SHA-256 operates but how the results will drastically change if one bit is misplaced. During our testing phase, without using the $0xFFFFFFFFL$ mask, our results would occasionally match the correct output, but more often than not, would return an incorrect value. As a result, we decided to mask the stored value to ensure we know exactly where each bit is stored.
 %Cite github
 \begin{lstlisting}[language=Java]
 private static long[] sha256round(long[] S, int i, long[] W) {
@@ -20,4 +20,4 @@ private static long[] sha256round(long[] S, int i, long[] W) {
     return S;
 }
 \end{lstlisting}
-Implementing SHA-256, HMAC, HKDF, and KDFs allowed us to appreciate how the simplicity of manipulating bits can produce algorithms that ensures our data is secure from adversaries. Overall we were able to see how the algorithms can be used to ensure cryptographic security with other algorithms that depend on it make sort of a dependency tree that shows how one cryptographically secure algorithm can be used to build other cryptographically secure algorithms for different purposes. 
+Implementing SHA-256, HMAC, HKDF, and KDFs allowed us to appreciate how the simplicity of manipulating bits can produce algorithms that ensure our data is secure from adversaries. Overall we were able to see how the algorithms can be used to ensure cryptographic security with other algorithms that depend on it, making a dependency tree that shows how one cryptographically secure algorithm can be used to build other cryptographically secure algorithms for different purposes. 

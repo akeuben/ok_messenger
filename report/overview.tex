@@ -1,13 +1,13 @@
-Our project was to reimplement the Signal protocol and explore and gain a deeper understand of 
-the cryptographic systems used in the protocol through reimplementation. The goal of the siginal protocol 
+Our project was to reimplement the Signal protocol and explore and gain a deeper understanding of 
+the cryptographic systems used in the protocol through reimplementation. The goal of the Signal protocol 
 is to provide end-to-end encrypted messaging between multiple parties. Privacy has 
 never been more important than now in our digital world. With everything we do online, 
-there are always attackers, big companies, or government agencies looking to gain access to our pesonal
+there are always attackers, big companies, or government agencies looking to gain access to our personal
 data. End-to-end encryption ensures that no one else, not even the server of the messaging app, can read 
 any encrypted messages, whether that be communication or decentralized networking.
 
-The goal of our implementation was to create a end-to-end messaging application to allow two parties 
-to communicate with eachother using the siginal protocol. The final result includes a server that is only
+The goal of our implementation was to create an end-to-end messaging application to allow two parties 
+to communicate with each other using the Signal protocol. The final result includes a server that is only
 responsible for routing encrypted messages and handling session management, and clients who can send messages
 securely to other clients through the server.
 
@@ -16,16 +16,14 @@ including the underlying algorithms such as: SHA-256, AES-256, AES-256CBC, and A
 Our original proposal also said that we were to implement the Sesame session management protocol, but due to time restrictions,
 and after gaining a greater understanding of the algorithms within Signal, we decided to not implement Sesame.
 The goal of Sesame is to manage client sessions including multiple devices and group chats. We decided that this was too ambitious 
-given the time we had to complete this project, so we dropped that protocol in favour of a simplier server implementation.
+given the time we had to complete this project, so we dropped that protocol in favour of a simpler server implementation.
 
-The implementation of all algorithms in the protocol was evenly divided between the computer science members of the group (Avery and Joshua),
-while the analysis was assigned to our math member, Aritra.
+The implementation of all algorithms in the protocol was evenly divided between the computer science members of the group (Avery and Joshua), while the analysis was assigned to our math member, Aritra.
 
-The report assumes a baseline understanding of cryptographic primatives including SHA and AES, as well as an understanding 
-of the Java programming language and Junit for unit testing.
+The report assumes a baseline understanding of cryptographic primitives including SHA and AES, as well as an understanding of the Java programming language and Junit for unit testing.
 
 As for the technical aspects of the system, everything was programmed in the Java programming language with Junit for unit testing of 
-individual cryptographic systems. To facilitate communication between the client and server, we used a Websocket library for java,
-allowing for an easy to implement and use persistant communication system.
+individual cryptographic systems. To facilitate communication between the client and server, we used a Websocket library for Java,
+allowing for an easy-to-implement persistent communication system.
 
 Our implementation can be found at \url{http://www.github.com/akeuben/ok_messenger}

@@ -127,7 +127,7 @@ ensuring that an attacker could not time our implementation to find information.
 
 Implementing AES-256 from scratch strengthened our understanding of the algorithm, especially with the 
 key scheduling algorithm, as it was not covered in much detail during class, especially when it comes to 256-bit keys.
-As with SHA-256 (as you will read below), we had a veriety of issues with Java not supporting unsigned integers of any length.
+As with SHA-256 (as you will read below), we had a variety of issues with Java not supporting unsigned integers of any length.
 So, when splitting the key for the algorithm, we had to ensure that we masked off only the bits we were using and storing them in 
 types larger than necessary. For example, commonly throughout the entire protocol, we had to store bytes in integer variables and use 
 1 byte masks with \texttt{number \& 0xFF} to keep only the single byte after an operation.

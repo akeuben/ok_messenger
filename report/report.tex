@@ -1,4 +1,71 @@
-\input{header.tex}
+%\input{header.tex}
+\documentclass{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amssymb, amstext, amsthm, amscd, amsmath,color, mathabx}
+\usepackage{cite}
+\RequirePackage{doi}
+\usepackage{hyperref}
+
+%for multiline comments \begin{comment}
+\usepackage{comment}
+
+
+%for fancy enums
+\usepackage{enumerate}
+
+% images
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+% greek laziness
+\newcommand{\ep}{\varepsilon}
+\newcommand{\vp}{\varphi}
+\newcommand{\emp}{\emptyset}
+
+%some basic laziness i tend to use
+\newcommand{\N}{{\mathbb N}}
+\newcommand{\Q}{{\mathbb Q}}
+\newcommand{\R}{{\mathbb R}}
+\newcommand{\Z}{{\mathbb Z}}
+\newcommand{\C}{{\mathbb C}}
+\newcommand{\ord}{{\mathrm{ord}}}
+\newcommand{\im}{{\mathrm{im}}}
+\newcommand{\id}{{\mathrm{id}}}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+%     normal style theorems,
+%\numberwithin{equation}{section} %%%%%%number within section
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+ \newtheorem*{theoremA}{Theorem A}
+  \newtheorem*{theoremB}{Theorem B}
 
 \title{Secure Messaging with Double Ratchet\\ A requirement for the Signal Protocol}
 \author{Avery Keuben (CPSC)\\ Joshua Liu (CPSC)\\ Aritra DE (MATH)}

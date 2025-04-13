@@ -4,11 +4,11 @@ to steal an encryption/decryption key and read one message, they won't be able t
 any other messages. 
 
 The core idea is that Alice and Bob have two core ratchets each, a sending ratchet and a 
-receving ratchet. If alice sends a message to bob, she will perform a ratchet step on her sending 
-ratchet to get a key $k$ to encrypt the message with. Bob, upon reception of the message will perform 
-a ratchet step on his receving ratchet to get the same key $k$. The core idea here is that each party's 
+receiving ratchet. If Alice sends a message to Bob, she will perform a ratchet step on her sending 
+ratchet to get a key $k$ to encrypt the message with. Bob, upon reception of the message, will perform 
+a ratchet step on his receiving ratchet to get the same key $k$. The core idea here is that each party's 
 sending ratchet is linked to the other party's receiving ratchet, and vice-versa.
 
-In this section, we will discuss the implementation and efficiveness of 
+In this section, we will discuss the implementation and effectiveness of 
 the Double Ratchet algorithm, including how desired security properties of double ratchet are 
 achieved by expanding upon the two ratchets as described above.
